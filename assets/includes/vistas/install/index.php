@@ -9,47 +9,41 @@
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <script src="https://kit.fontawesome.com/7c1152212d.js" crossorigin="anonymous"></script>
+    <style>
+        .list-group-item{
+            cursor: pointer;
+        }
+        .disabled{
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 
 <body class="bg-dark">
-    <div class="container p-0 pt-4 ml-4">
-        <div class="row p-0">
+    <div class="container pt-4">
+        <div class="row">
             <div class="col-sm-3">
                 <div class="card">
                     <div class="card-header text-muted">
                         Progreso
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item active">Conexión a la base de datos</li>
-                        <li class="list-group-item">Cuenta administrador</li>
-                        <li class="list-group-item">Finalizado</li>
+                        <li class="list-group-item disabled">Conexión a la base de datos</li>
+                        <li class="list-group-item disabled">Cuenta administrador</li>
+                        <li class="list-group-item disabled">Dependencias</li>
+                        <li class="list-group-item disabled">Finalizado</li>
                     </ul>
                 </div>
             </div>
             <div class="col-sm-9">
-                <div class="card">
+                <div class="card" id="setting">
                     <div class="card-header">
-                        Conexión a la base de datos
+                        Cargando...
                     </div>
                     <div class="card-body">
-                        <form>
-                            <div class="form-group row">
-                                <label for="driver" class="col-sm-2 col-form-label">Driver</label>
-                                <div class="col-sm-10">
-                                    <select class="form-control" id="driver">
-                                        <option value="mysql" selected>MySQL</option>
-                                        <option value="sqlite">SQLite</option>
-                                        <option value="postgresql">PostgreSQL</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-                                <div class="col-sm-10">
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Password">
-                                </div>
-                            </div>
-                        </form>
+                        Cargando...
+                    </div>
+                    <div class="card-footer" id="status">
                     </div>
                 </div>
             </div>
@@ -57,12 +51,12 @@
         </div>
     </div>
 
-    <script defer src="https://code.jquery.com/jquery-latest.min.js" crossorigin="anonymous">
-    </script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
-    </script>
+    <!-- <script defer src="https://code.jquery.com/jquery-latest.min.js" crossorigin="anonymous">
+    </script> -->
+    <script defer src="assets/js/jquery-3.4.1.min.js"></script>
+    <script defer src="assets/js/popper.min.js"></script>
     <script defer src="assets/js/bootstrap.min.js"></script>
-    <script defer src="assets/js/main.js" type="module"></script>
+    <script defer src="assets/js/install.js" type="module"></script>
     <script defer src="assets/js/removeBanner.js"></script>
 </body>
 

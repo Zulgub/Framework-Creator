@@ -56,7 +56,7 @@ Class DBConnection {
     /* Function getPDOConnection
      * Get a connection to the database using PDO.
      */
-    private function getPDOConnection() {
+    public function getPDOConnection() {
         // Check if the connection is already established
         if ($this->dbc == NULL) {
             // Create the connection
@@ -68,7 +68,7 @@ Class DBConnection {
             try {
                 $this->dbc = new PDO( $dsn, $this->_config[ 'username' ], $this->_config[ 'password' ] );
             } catch( PDOException $e ) {
-                echo __LINE__.$e->getMessage();
+                return __LINE__.$e->getMessage();
             }
         }
     }
