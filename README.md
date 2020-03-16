@@ -9,3 +9,6 @@ Proyecto final de curso
     <img src="https://img.shields.io/badge/requirements-nodejs-red">
   </a>  
 </p>
+
+# Instalación
+Una vez descargado el proyecto, en cuanto accedamos a el, se nos abrirá una interfaz de instalación que facilitará al usuario la configuración de la aplicación.
