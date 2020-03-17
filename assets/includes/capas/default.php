@@ -8,7 +8,7 @@
     <title><?php echo $name;?></title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
-    <script src="https://kit.fontawesome.com/7c1152212d.js" crossorigin="anonymous"></script>
+    <link href="assets/fontawesome-5.12/css/all.css" rel="stylesheet">
 </head>
 
 <body>

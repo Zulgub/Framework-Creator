@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Instalación</title>
+    <title>Instalación - <?php echo $GLOBALS["name"]; ?></title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
-    <script src="https://kit.fontawesome.com/7c1152212d.js" crossorigin="anonymous"></script>
+    <link href="assets/fontawesome-5.12/css/all.css" rel="stylesheet">
     <style>
         .list-group-item{
             cursor: pointer;
@@ -20,9 +20,17 @@
 </head>
 
 <body class="bg-dark">
-    <div class="container pt-4">
+<header>
+        <div class="jumbotron jumbotron-fluid mb-0">
+            <div class="container">
+                <h1 class="display-4">Bienvenido a la interfaz de instalación</h1>
+                <p class="lead"><?php echo $GLOBALS["name"]; ?></p>
+            </div>
+        </div>
+    </header>
+    <div class="container py-4">
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-lg-3 mb-2">
                 <div class="card">
                     <div class="card-header text-muted">
                         Progreso
@@ -35,7 +43,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-9">
+            <div class="col-lg-9">
                 <div class="card" id="setting">
                     <div class="card-header">
                         Cargando...

@@ -5,7 +5,7 @@ mb_internal_encoding('UTF-8');
  
 // Esto le dice a PHP que generaremos cadenas UTF-8
 mb_http_output('UTF-8');
-$name = "Framework Creator";
+$GLOBALS["name"] = "Framework Manager";
 $permisos = 0;
 require_once 'connect.inc.php';
 require_once 'class/db.php';
