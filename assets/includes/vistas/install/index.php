@@ -8,19 +8,17 @@
     <title>Instalación - <?php echo $GLOBALS["name"]; ?></title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/install.css">
     <link href="assets/fontawesome-5.12/css/all.css" rel="stylesheet">
-    <style>
-        .list-group-item{
-            cursor: pointer;
-        }
-        .disabled{
-            cursor: not-allowed;
-        }
-    </style>
+    <script defer src="assets/js/jquery-3.4.1.min.js"></script>
+    <script defer src="assets/js/popper.min.js"></script>
+    <script defer src="assets/js/bootstrap.min.js"></script>
+    <script defer src="assets/js/install.js" type="module"></script>
+    <script defer src="assets/js/removeBanner.js"></script>
 </head>
 
 <body class="bg-dark">
-<header>
+    <header>
         <div class="jumbotron jumbotron-fluid mb-0">
             <div class="container">
                 <h1 class="display-4">Bienvenido a la interfaz de instalación</h1>
@@ -32,13 +30,13 @@
         <div class="row">
             <div class="col-lg-3 mb-2">
                 <div class="card">
-                    <div class="card-header text-muted">
+                    <div class="card-header lead">
                         Progreso
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item disabled">Conexión a la base de datos</li>
                         <li class="list-group-item disabled">Cuenta administrador</li>
-                        <li class="list-group-item disabled">Dependencias</li>
+                        <li class="list-group-item disabled">Instalación</li>
                         <li class="list-group-item disabled">Finalizado</li>
                     </ul>
                 </div>
@@ -58,14 +56,6 @@
 
         </div>
     </div>
-
-    <!-- <script defer src="https://code.jquery.com/jquery-latest.min.js" crossorigin="anonymous">
-    </script> -->
-    <script defer src="assets/js/jquery-3.4.1.min.js"></script>
-    <script defer src="assets/js/popper.min.js"></script>
-    <script defer src="assets/js/bootstrap.min.js"></script>
-    <script defer src="assets/js/install.js" type="module"></script>
-    <script defer src="assets/js/removeBanner.js"></script>
 </body>
 
 </html>

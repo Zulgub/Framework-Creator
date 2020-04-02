@@ -1,28 +1,40 @@
 <?php
-
+/**
+ * Núcleo principal del MVC propio
+ * 
+ */
 class Controlador
 {
 
     private $pagina, $capa, $title;
     private $ruta = "assets/includes/";
 
-    public function __construct($pagina = "index", $capa = "default")
+    public function __construct($pagina = "index", $capa = "empty")
     {
         $this->pagina = $pagina;
         $this->setTitle($pagina);
         $this->capa = $capa;
     }
 
+    /**
+     * Obitiene el titulo de la ruta
+     */
     public function getTitle()
     {
         echo $this->title;
     }
 
+    /**
+     * Establece el titulo de la ruta
+     */
     public function setTitle($valor){
         $this->title = $valor;
     }
 
-    public function error($code,$infoCode=null){
+    /**
+     * Muestra un error con las rutas
+     */
+    public function error(){
         if(file_exists($this->ruta . 'vistas/error.php')){
             require_once $this->ruta . "vistas/error.php";
         }else{
@@ -32,6 +44,9 @@ class Controlador
         }
     }
 
+    /**
+     * Muestra el contenido de la ruta
+     */
     public function contenido()
     {
         if (file_exists($this->ruta . 'vistas/' . $this->pagina . '.php'))
@@ -41,6 +56,9 @@ class Controlador
         }
     }
 
+    /**
+     * Muestra la capa de la ruta
+     */
     public function capa()
     {
         require_once 'assets/includes/conf.inc.php';

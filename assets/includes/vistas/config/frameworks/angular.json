@@ -1,0 +1,20 @@
+{
+    "name": "Angular",
+    "required": ["composer"],
+    "commands": {
+        "install": {
+            "simple": "composer create-project laravel/laravel proyects/$nameProyect",
+            "auth": "php artisan ui $frontend --auth"
+        },
+        "table": {
+            "new": "php artisan make:migration create_$tableName_table",
+            "create": "php artisan migrate"
+        },
+        "frontend": "composer require laravel/ui && php artisan ui $frontend",
+        "langs": {
+            "spanish": "composer require laraveles/spanish"
+        },
+        "installLang": "php artisan vendor:publish --tag=lang"
+    },
+    "forms": null
+}

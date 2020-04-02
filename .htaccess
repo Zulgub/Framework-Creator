@@ -2,9 +2,6 @@
 DirectoryIndex index.php
 AddDefaultCharset utf-8
 AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
-ErrorDocument 404 /RoqueMove/index.php?vista=error&error=404
-ErrorDocument 403 /RoqueMove/index.php?vista=error&error=403
-ErrorDocument 500 /RoqueMove/index.php?vista=error&error=500
 #Redirecciona una página individual a otra página 
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -12,12 +9,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php
 RewriteCond %{REQUEST_FILENAME}\.html -f
-RewriteCond %{REQUEST_URI} !^/RoqueMove/
-RewriteRule ^(.*)$ /RoqueMove/$1 [L,R=301]
+RewriteRule ^(.*)$ ./$1 [L,R=301]
 Options +FollowSymLinks
 Options -Indexes
 RewriteRule ^([^.]*$) index.php?vista=$1 [L]
-#RewriteRule ^sitemap\.xml$ functions/sitemap.php [L]
 </IfModule>
 #=============================================================================#
 #          HEADERS, CACHING AND OPTIMIZATION

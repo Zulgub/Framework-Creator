@@ -35,7 +35,7 @@ class Ruta
     public function run()
     {
         $pagina = isset($_GET["vista"]) && !empty($_GET["vista"]) && $_GET["vista"] != "index.php" ? addslashes($_GET["vista"]) : 'index';
-        if(file_exists("assets/includes/vistas/install/index.php"))
+        if(file_exists("assets/includes/vistas/install/index2.php"))
             $pagina = "install";
         $pagina = preg_replace('/\.php$/', '', $pagina);
         $titulo = $pagina == "404" ? "Error 404" : "RoqueMove";

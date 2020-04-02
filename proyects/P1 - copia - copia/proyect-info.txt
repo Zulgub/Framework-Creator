@@ -1,0 +1,2 @@
+name: symfony 1
+framework: symfony
