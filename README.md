@@ -11,9 +11,10 @@ Dependencias
   </a>  
 </p>
 
-# Librerias usadas
+# Complementos usados
 <ul>
   <li><a href="https://formbuilder.online/">FormBuilder</a></li>
+  <li><a href="https://www.jqueryscript.net/table/table-editing-creation-bootstable.html">Dynamic Table Row Editing</a></li>
 </ul>
 
 # Instalación
