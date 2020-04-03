@@ -1,6 +1,7 @@
 # Framework-Manager
 Proyecto final de curso
 
+Dependencias
 <p>
   <a href="https://getcomposer.org" alt="Composer" rel="nofollow">
     <img src="https://img.shields.io/badge/requisitos-composer-red">
@@ -9,6 +10,11 @@ Proyecto final de curso
     <img src="https://img.shields.io/badge/requisitos-nodejs-red">
   </a>  
 </p>
+
+# Librerias usadas
+<ul>
+  <li><a href="https://formbuilder.online/">FormBuilder</a></li>
+</ul>
 
 # Instalación
 Una vez descargado el proyecto, en cuanto accedamos a el, se nos abrirá una interfaz de instalación que facilitará al usuario la configuración de la aplicación.
