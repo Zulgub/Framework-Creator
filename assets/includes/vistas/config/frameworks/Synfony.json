@@ -1,0 +1,1 @@
+{"name":"Synfony","requirements":[{"nombre":"lel","comando":"el","DT_RowId":"15867361752900"}],"installCommand":"composer create-project synfony"}

@@ -11,6 +11,8 @@ $R->new('index','default','index');
 
 $R->new('config.index','default','config');
 
+$R->new('test','empty','test');
+
 
 // Ruta de instalacion
 $R->new('install.index','empty','install');

@@ -1,0 +1,2 @@
+name=Angular 1
+framework=angular

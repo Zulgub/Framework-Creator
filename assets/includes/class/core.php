@@ -1,5 +1,10 @@
 <?php
 /**
+ * Cosas que hacer
+ * Hacer que se puedan cargar archivos js segun la pagina
+ */
+
+/**
  * Núcleo principal del MVC propio
  * 
  */
@@ -26,6 +31,7 @@ class Controlador
 
     /**
      * Establece el titulo de la ruta
+     * @param String $valor Título de la ruta
      */
     public function setTitle($valor){
         $this->title = $valor;

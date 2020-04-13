@@ -1,6 +1,7 @@
 <?php
-/*
+/**
  * Class DBConnection
+ * 
  * Create a database connection using PDO
  * @author jonahlyn@unm.edu
  *
@@ -27,7 +28,6 @@
  * $stmt->execute(array($name));
  *
  */
-
 class DBConnection
 {
 
@@ -38,9 +38,10 @@ class DBConnection
     // Database Connection
     public $dbc;
 
-    /* function __construct
+    /**
+     * Function __construct
      * Opens the database connection
-     * @param $config is an array of database connection parameters
+     * @param Array $config is an array of database connection parameters
      */
     public function __construct(array $config)
     {
@@ -48,7 +49,9 @@ class DBConnection
         $this->getPDOConnection();
     }
 
-    /* Function __destruct
+    /**
+     * Function __destruct
+     * 
      * Closes the database connection
      */
     public function __destruct()
@@ -56,7 +59,9 @@ class DBConnection
         $this->dbc = NULL;
     }
 
-    /* Function getPDOConnection
+    /**
+     * Function getPDOConnection
+     * 
      * Get a connection to the database using PDO.
      */
     public function getPDOConnection()
@@ -77,10 +82,12 @@ class DBConnection
         }
     }
 
-    /* Function runQuery
+    /**
+     * Function runQuery
+     * 
      * Runs a insert, update or delete query
-     * @param string sql insert update or delete statement
-     * @return int count of records affected by running the sql statement.
+     * @param String $sql insert update or delete statement
+     * @return Integer count of records affected by running the sql statement.
      */
     public function runQuery($sql)
     {
@@ -92,10 +99,12 @@ class DBConnection
         return $count;
     }
 
-    /* Function getQuery
+    /**
+     * Function getQuery
+     * 
      * Runs a select query
-     * @param string sql insert update or delete statement
-     * @returns associative array
+     * @param String $sql insert update or delete statement
+     * @return Associative array
      */
     public function getQuery($sql)
     {

@@ -14,9 +14,22 @@
     <script defer src="assets/js/popper.min.js"></script>
     <script defer src="assets/js/bootstrap.min.js"></script>
     <script defer src="assets/js/removeBanner.js"></script>
-    <!-- Forms generados por json by https://github.com/json-editor/json-editor -->
+    <!-- Editor de formularios JSON -->
     <script defer src="assets/js/forms/form-builder.min.js"></script>
 
+    <!-- Editor de tablas -->
+    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/generator-base.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/editor.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/rowReorder.dataTables.min.css">
+
+    
+    <script defer type="text/javascript" src="assets/js/tableEditor/jquery.dataTables.min.js"></script>
+    <script defer type="text/javascript" src="assets/js/tableEditor/dataTables.rowReorder.min.js"></script>
+    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/datatables.min.js"></script>
+    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/dataTables.editor.min.js"></script>
+    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/editor.bootstrap4.min.js"></script>
     <script defer src="assets/js/main.js" type="module"></script>
 </head>
 
@@ -45,7 +58,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalLabel">Cargando...</h5>

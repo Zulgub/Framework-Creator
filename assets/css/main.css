@@ -6,12 +6,12 @@ body {
   flex: 1;
 }
 
-.img-proyect {
+.img-project {
   height: 124px;
   position: relative;
 }
 
-.img-proyect:hover:after {
+.img-project:hover:after {
   opacity: 1;
   color: #FFF;
   height: 100%;
@@ -21,7 +21,7 @@ body {
   right: 0;
 }
 
-.img-proyect:after {
+.img-project:after {
   content: "\f013";
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
@@ -39,6 +39,11 @@ body {
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.774);
   transition: height 0.25s ease-out, opacity 0.25s ease, color 1s ease-in 0.135s;
+}
+
+/* Ocultar en la edición del dataTable algunos campos */
+.DTE_Field_Name_readingOrder{
+  display: none !important;
 }
 
 .copyLeft {
@@ -61,6 +66,14 @@ ul.frmb{
   position: relative;
   width: 80px;
   height: 80px;
+}
+/* Ocultamos el botón de añadir opcion para los checkbox, puesto que no queremos que se puedan añadir mas */
+li.form-field[type="checkbox-group"] .option-actions{
+  display: none !important;
+}
+
+.commandNotFound {
+  background-color: #f8d7da !important;
 }
 
 .lds-spinner div {

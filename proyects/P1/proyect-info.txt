@@ -1,2 +1,0 @@
-name: Laravel prueba 1
-framework: laravel

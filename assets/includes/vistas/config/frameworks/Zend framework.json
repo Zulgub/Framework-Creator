@@ -1,0 +1,1 @@
+{"name":"Zend framework","requirements":[{"nombre":"composer","comando":"composer --version","DT_RowId":"15866485881040"}],"installCommand":"composer create-project zend\/zend $name"}
