@@ -650,7 +650,7 @@ export class Frameworks {
 
             var datos = {
                 "data": jsonschema,
-                "nameFile": jsonschema.name + '.json',
+                "nameFile": interfaz.ucFirst(jsonschema.name) + '.json',
                 "api": "saveFile"
             }
             // Borramos el antiguo fichero si se cambia el nombre

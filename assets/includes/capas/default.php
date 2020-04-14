@@ -16,6 +16,7 @@
     <script defer src="assets/js/removeBanner.js"></script>
     <!-- Editor de formularios JSON -->
     <script defer src="assets/js/forms/form-builder.min.js"></script>
+    <script defer src="assets/js/forms/form-render.min.js"></script>
 
     <!-- Editor de tablas -->
     <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/datatables.min.css">

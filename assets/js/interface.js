@@ -16,8 +16,58 @@ class Interface {
      */
     loadModules() {
         var self = this;
+
         $(".newProject").click(function () {
-            self.modal("Nuevo proyecto", ``);
+            interfaz.getFrameList(true, function (list) {
+                var select = '<select class="form-control" id="frameSelected"><option value="">Seleccione un framework</option>';
+                list.forEach(op => {
+                    select += `<option>${op}</option>`
+                });
+                self.modal("Nuevo proyecto", `<label class="form-label row p-4">Seleccione un framework: ${select}</select></label><div class="invalid-feedback">¡Debes selecionar un framework!</div>`, "Siguiente", function () {
+                    var parent = $(".modal-content");
+                    var selected = $("#frameSelected").val();
+                    parent.find(".invalid-feedback").hide();
+                    if (selected != "") {
+                        self.modal(`Nuevo proyecto - ${selected}`, "", `Crear`, function () {});
+
+                        self.ajax(`./assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
+                            if (datos.forms) {
+                                self.waitUntilElement(".modal-body", function () {
+                                    self.setFixedRender(".modal-body", datos)
+                                }, function () {
+                                    console.error("#Error formRender_01");
+                                });
+                            }else{
+                                $(".modal-body").html('<div class="alert alert-danger text-center"><i class="fa fa-exclamation-triangle"></i> Error: <strong>No se ha encontrado formulario para este framework.</strong></div>');
+                            }
+                        }, function () {
+                            console.error("Ha ocurrido un error al obtener los datos del framework");
+                        });
+
+                    } else
+                        parent.find(".invalid-feedback").show();
+
+                }, false, false);
+            });
+        });
+    }
+
+    /**
+     * Establece el render del form
+     * 
+     * @param {String} element Elmento al que se le asigna el formRender
+     * @param {Object} data Contenido del formRender
+     */
+    setFixedRender(element, data) {
+        var forms = JSON.parse(atob(data.forms));
+
+        Object.assign(forms).forEach(element => {
+            if (!element.multiple)
+                delete element.multiple;
+        });
+
+        $(element).formRender({
+            formData: forms
         });
     }
 
@@ -221,7 +271,6 @@ class Interface {
             // Actualizamos la lista
             if (actualizar)
                 interfaz.listaFrameworksIntermediate();
-
             var lista = this._listFrameworks;
             if (lista.length > 0)
                 callBack(lista);
@@ -229,7 +278,7 @@ class Interface {
                 setTimeout(function () {
                     self.getFrameList(false, callBack);
                 }, 300);
-        }else{
+        } else {
             console.error("Es necesario tener una función callBack");
         }
     }
