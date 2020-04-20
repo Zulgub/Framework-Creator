@@ -47,6 +47,29 @@ class App
     }
 
     /**
+     * Lista de los proyectos creados [Array]
+     * @return Array Lista de los proyectos creados
+     */
+    public function listProjects()
+    {
+
+        $resultado = [];
+        $ruta = '../../../projects/';
+        if (file_exists($ruta)) {
+            $directorio = opendir($ruta);
+
+            while ($archivo = readdir($directorio)) {
+
+                if (!is_dir($archivo) && $archivo != ".htaccess") {
+                    array_push($resultado, $archivo);
+                }
+            }
+        }
+
+        return $resultado;
+    }
+
+    /**
      * Lista los proyectos creados
      * @param String $buscar Busca un proyecto
      * @return String Información del proyecto (Elementos html)
@@ -55,21 +78,16 @@ class App
     {
         $resultado = "";
         $ruta = '../../../projects/';
-        if (file_exists($ruta)) {
-            $directorio = opendir($ruta);
+        foreach ($this->listProjects() as $archivo) {
 
-            while ($archivo = readdir($directorio)) {
+            $project = array(
+                'framework' => $this->infoProject($ruta . $archivo, "framework"),
+                'name' => $this->infoProject($ruta . $archivo, "name")
+            );
 
-                if (!is_dir($archivo) && $archivo != ".htaccess") {
+            if ($buscar == null || strpos(strtoupper(" " . $project["name"]), strtoupper($buscar)) != false) {
 
-                    $project = array(
-                        'framework' => $this->infoProject($ruta . $archivo, "framework"),
-                        'name' => $this->infoProject($ruta . $archivo, "name")
-                    );
-
-                    if ($buscar == null || strpos(strtoupper(" " . $project["name"]), strtoupper($buscar)) != false) {
-
-                        $resultado .= '
+                $resultado .= '
             <div class="col-xl-3 my-1">
                 <div class="card">
                     <a href="./projects/' . $archivo . '/settings">
@@ -93,10 +111,9 @@ class App
                     </div>
                 </div>
             </div>';
-                    }
-                }
             }
         }
+
 
         return empty($resultado) ? "<div class=\"alert alert-info w-100 mx-3 text-center\">No se han encontrado proyectos</div>" : $resultado;
     }
@@ -147,31 +164,43 @@ class App
     }
 
     /**
+     * Obtiene los datos del framework
+     * @param String $buscar Busca un frameworks
+     * @param Int $dir Indica el origen de la ruta a buscar
+     * @return Array Datos del framework
+     */
+    public function getDataFramework($buscar = null, $dir = 1)
+    {
+        $resultado = [];
+        $dir = $dir == 1 ? "./assets/includes/vistas/config/frameworks/" : "../vistas/config/frameworks/";
+        if (is_null($buscar)) {
+            $directorio = opendir($dir);
+            while ($archivo = readdir($directorio)) {
+                $info = new SplFileInfo($archivo);
+                if ($info->getExtension() == "json") {
+                    $resultado[$info->getFilename()] = json_decode(file_get_contents($dir . $archivo), true);
+                }
+            }
+        } else {
+            $resultado = json_decode(file_get_contents($dir . $buscar . ".json"), true);
+        }
+        return $resultado;
+    }
+
+    /**
      * Obtiene la configuración del framework
      */
     public function listSettingFrameworks()
     {
         $resultado = "";
-        $dir = "assets/includes/vistas/config/frameworks/";
-        $directorio = opendir($dir);
-        while ($archivo = readdir($directorio)) {
-            $info = new SplFileInfo($archivo);
-            if ($info->getExtension() == "json") {
-                $active = empty($resultado) ? " fade show active" : "";
-                // Obtenemos el contenido del archivo
-                $data = json_decode(file_get_contents($dir . $archivo), true);
 
-                $nombreHTML = preg_replace('/\s/', "_", $data["name"]);
+        foreach ($this->getDataFramework() as $key => $data) {
+            $active = empty($resultado) ? " fade show active" : "";
+            // Obtenemos el contenido del archivo
 
-                // Recogemos cada requisito
-                $requisitos = "";
-                if (isset($data["required"]))
-                    foreach ($data["required"] as $requisito) {
-                        $coma = empty($requisitos) ? "" : ", ";
-                        $requisitos .= $coma . $requisito;
-                    }
+            $nombreHTML = preg_replace('/\s/', "_", $data["name"]);
 
-                $resultado .= "<div class=\"tab-pane{$active}\" id=\"{$nombreHTML}\" role=\"tabpanel\" aria-labelledby=\"list-{$nombreHTML}-list\">
+            $resultado .= "<div class=\"tab-pane{$active}\" id=\"{$nombreHTML}\" role=\"tabpanel\" aria-labelledby=\"list-{$nombreHTML}-list\">
                 <div class=\"float-left\">
                     <button class=\"btn btn-success save\"><i class=\"fa fa-save\"></i> Guardar</button>
                     <button class=\"btn btn-danger delete\" data-toggle=\"modal\" data-target=\"#modal\"><i class=\"fa fa-trash\"></i> Borrar</button>
@@ -213,11 +242,21 @@ class App
                                 </div>
                             </div>
                             <div class=\"form-group row\">
+                                <label for=\"main-root-{$nombreHTML}\" class=\"col-xl-4 col-form-label\">Ruta principal</label>
+                                <div class=\"col-sm-10\">
+                                    <input type=\"text\" id=\"main-root-{$nombreHTML}\" class=\"form-control\" value=\"{$data["mainRoot"]}\" placeholder=\"ej: public\">
+                                    <div class=\"invalid-feedback\">¡Debes indicar la ruta principal!</div>
+                                    <div class=\"text-muted\">La ruta principal se usará para enlazar con la vista del proyecto</div>
+                                </div>
+                            </div>
+                            <div class=\"form-group row\">
                                 <label for=\"install-command-{$nombreHTML}\" class=\"col-xl-4 col-form-label\">Comando de instalación:</label>
                                 <div class=\"col-sm-10\">
                                     <input type=\"text\" id=\"install-command-{$nombreHTML}\" class=\"form-control\" value=\"{$data["installCommand"]}\" required>
                                     <div class=\"invalid-feedback\">
                                         ¡Debes establecer un comando de instalación!
+                                        <br>
+                                        ¡Debe aparecer \$name!
                                     </div>
                                     <div class=\"text-muted\">Usa <strong>\$name</strong> para obtener el nombre del proyecto</div>
                                 </div>
@@ -225,7 +264,7 @@ class App
                         </form>
 
                     </div>
-                    <div class=\"tab-pane p-2 fade json-editor-form\" data-json=\"{$archivo}\" id=\"{$nombreHTML}-forms\" role=\"tabpanel\">
+                    <div class=\"tab-pane p-2 fade json-editor-form\" data-json=\"{$key}\" id=\"{$nombreHTML}-forms\" role=\"tabpanel\">
                         <div class=\"lds-spinner d-block mx-auto\">
                             <div></div>
                             <div></div>
@@ -251,7 +290,6 @@ class App
                             Para ordenar los comandos tienes que hacer click sobre el número del orden, y arrastrar.<br>
                             Formas de obtener valores:
                             <ul>
-                                <li>Valor php: \$<nombre de la variable>, ej: \$name</li>
                                 <li>Valor de un input: %<nombre del input>, ej: %frontend</li>
                                 <li>Valor del input asociado: %this</li>
                             </ul>
@@ -268,6 +306,21 @@ class App
                     </div>
                 </div>
             </div>";
+        }
+        return $resultado;
+    }
+    public function installing()
+    {
+        $resultado = array();
+        $dir = "../installing/";
+        $directorio = opendir($dir);
+        while ($archivo = readdir($directorio)) {
+            $info = new SplFileInfo($archivo);
+            if ($info->getExtension() == "json") {
+                // Obtenemos el contenido del archivo
+                $data = json_decode(file_get_contents($dir . $archivo), true);
+                if (!isset($data["cancel"]))
+                    $resultado[explode("_status", $archivo)[0]] = array("progress" => $data["progress"], "pid" => $data["pid"], "name" => $data["name"]);
             }
         }
         return $resultado;
@@ -303,13 +356,5 @@ class App
             return 1;
         } else
             return 0;
-    }
-
-    /**
-     * Ejecuta los comandos según el framework
-     */
-    private function commands()
-    {
-        system("cd ");
     }
 }

@@ -1,11 +1,11 @@
 import {
-    interfaz
+    Interface
 } from './interface.js';
 import {
     Frameworks
 } from './frameworks.js';
 
-$('[data-toggle="tooltip"]').tooltip();
+var interfaz = new Interface;
 
 /**
  * Controla la lista de los proyectos
@@ -33,6 +33,7 @@ var Projects = (function () {
             "api": "projectList"
         }, undefined, undefined, function (data) {
             $("#projectlist").html(data);
+            $('[data-toggle="tooltip"]').tooltip();
         }, function () {
             $("#projectlist").html(`<div class="alert alert-danger w-100 text-center mx-2">
             Se ha producido un error al obtener los resultados.<br>
@@ -43,5 +44,10 @@ var Projects = (function () {
 
     return Projects;
 }());
+
+// Evitamos que el dropdown se oculte al hacer clic sobre los switchs
+$(document).on('click', '.notify-drop', function (e) {
+    e.stopPropagation();
+});
 
 new Projects;

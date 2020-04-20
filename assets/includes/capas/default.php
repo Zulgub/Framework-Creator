@@ -14,6 +14,8 @@
     <script defer src="assets/js/popper.min.js"></script>
     <script defer src="assets/js/bootstrap.min.js"></script>
     <script defer src="assets/js/removeBanner.js"></script>
+    <script defer src="assets/js/push.min.js"></script>
+
     <!-- Editor de formularios JSON -->
     <script defer src="assets/js/forms/form-builder.min.js"></script>
     <script defer src="assets/js/forms/form-render.min.js"></script>
@@ -25,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/rowReorder.dataTables.min.css">
 
-    
+
     <script defer type="text/javascript" src="assets/js/tableEditor/jquery.dataTables.min.js"></script>
     <script defer type="text/javascript" src="assets/js/tableEditor/dataTables.rowReorder.min.js"></script>
     <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/datatables.min.js"></script>
@@ -46,6 +48,25 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <a class="nav-link" data-index="2" href="./config"><i class="fa fa-cog"></i> Configuración</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right mr-4">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle notify text-white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><strong class="installing">1</strong></a>
+                        <ul class="dropdown-menu notify-drop p-2">
+                            <div class="notify-drop-title">
+                                <div class="row">
+                                    <div class="col-12 text-center">Instalaciones en curso <strong class="installing">1</strong></div>
+                                </div>
+                            </div>
+                            <!-- end notify title -->
+                            <!-- notify content -->
+                            <div class="drop-content px-2">
+                            </div>
+                            <div class="notify-drop-footer text-center">
+                                <buton type="button" class="btn btn-danger btn-sm mt-1 cancelAll"><i class="fa fa-stop"></i> Cancelar todos</button>
+                            </div>
+                        </ul>
                     </li>
                 </ul>
             </div>

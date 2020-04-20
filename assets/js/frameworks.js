@@ -1,8 +1,8 @@
 import {
-    interfaz
+    Interface
 } from "./interface";
 
-
+var interfaz = new Interface(false);
 /**
  * Queda por hacer
  * 
@@ -240,10 +240,24 @@ export class Frameworks {
                         name.focus();
                     }
 
+                    var repetido = false;
+
+                    for (let index = 0; index < requisitos.rows().data().length; index++) {
+                        var comando = requisitos.rows().data()[index];
+                        if (comando.nombre == name.val()) {
+                            repetido = true;
+                        }
+                    }
+
+                    if (repetido) {
+                        name.error('¡Ya existe un requisito con ese nombre!');
+                        name.focus();
+                    }
+
                     var command = this.field('comando');
                     if (!command.val().trim().length > 0) {
                         command.error('¡Debes introducir un comando!');
-                        if (name.val().trim().length > 0)
+                        if (name.val().trim().length > 0 && !repetido)
                             command.focus();
                     }
                 }
@@ -336,10 +350,22 @@ export class Frameworks {
             this._parent.find("#requirements-error").hide();
         }
 
+        var frameRoot = this._parent.find('#main-root-' + this._nameHTML);
+        if (!frameRoot.val().length > 0) {
+            errores++;
+            frameRoot.addClass("is-invalid");
+            $(`#main-root-${this._nameHTML} ~ .invalid-feedback`).show();
+        } else {
+            frameRoot.removeClass("is-invalid");
+            $(`#main-root-${this._nameHTML} ~ .invalid-feedback`).hide();
+
+        }
+
         var install = this._parent.find('#install-command-' + this._nameHTML);
+        var patron = /(?=.*\$name)(?=.{6,}$)/;
         // 9 - composer | laravel new length
-        if (install.val().trim().length < 9) {
-            mensaje += "¡Debes establecer un comando de instalación!<br>";
+        if (!patron.test(install.val())) {
+            mensaje += "¡Debes establecer un comando de instalación!<br>¡Debe incluir \$name!";
             errores++;
             this._parent.find(`#install-command-${this._nameHTML} ~ .invalid-feedback`).show();
             install.addClass("is-invalid");
@@ -403,7 +429,7 @@ export class Frameworks {
             this._lockSave = true;
             $(`#list-${this._nameHTML}-list`).append(` <i class="fa fa-exclamation-triangle text-danger mt-1 float-right"></i>`);
             if (mensaje.length > 0 && mostrarMensaje)
-                interfaz.modal("¡Atención!", mensaje, "Cerrar", null, true);
+                interfaz.modal("¡Atención!", mensaje, "Cerrar", null, null, true);
         }
     }
 
@@ -541,10 +567,24 @@ export class Frameworks {
                         name.focus();
                     }
 
+                    var repetido = false;
+
+                    for (let index = 0; index < self._table.rows().data().length; index++) {
+                        var comando = self._table.rows().data()[index];
+                        if (comando.nombre == name.val()) {
+                            repetido = true;
+                        }
+                    }
+
+                    if (repetido) {
+                        name.error('¡Ya existe un comando con ese nombre!');
+                        name.focus();
+                    }
+
                     var command = this.field('comando');
                     if (!command.val().trim().length > 0) {
                         command.error('¡Debes introducir un comando!');
-                        if (name.val().trim().length > 0)
+                        if (name.val().trim().length > 0 && !repetido)
                             command.focus();
                     }
                 }
@@ -625,6 +665,9 @@ export class Frameworks {
             // Guardamos requisitos
             jsonschema.requirements = self._requirementesData();
 
+            // Guardamos la ruta principal
+            jsonschema.mainRoot = self.findElementConfig("main-root");
+
             // Guardamos el comando de instalación
             jsonschema.installCommand = self.findElementConfig("install-command");
 
@@ -686,7 +729,7 @@ export class Frameworks {
                 <label for="frameName" class="col-xl-2 col-form-label">Nombre: </label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="frameName" required autofocus>
-                    <div class=\"invalid-feedback\">
+                    <div class="invalid-feedback">
                         ¡Debe escribir un nombre para el framework! Mínimo 5 carácteres
                     </div>
                 </div>
@@ -702,18 +745,27 @@ export class Frameworks {
                             </tr>
                         </thead>
                     </table>
-                    <div class=\"invalid-feedback\" id=\"frameReq-error\">
+                    <div class="invalid-feedback" id="frameReq-error">
                         ¡Debe incluir al menos un requisito!
                     </div>
-                    <div class=\"text-muted\">Para comprobar si tenemos instaladas las dependencias, lo averiguaremos por el comando de versión.</div>
+                    <div class="text-muted">Para comprobar si tenemos instaladas las dependencias, lo averiguaremos por el comando de versión.</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="frameRoot" class="col-xl-4 col-form-label">Ruta principal</label>
+                <div class="col-sm-10">
+                    <input type="text" id="frameRoot" class="form-control" placeholder="ej: public">
+                    <div class="invalid-feedback">¡Debes indicar la ruta principal!</div>
+                    <div class="text-muted">La ruta principal se usará para enlazar con la vista del proyecto</div>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="commandInstall" class="col-sm-6 col-form-label">Comando de instalación:</label>
                 <div class="col-sm-10">
                     <input type="text" id="commandInstall" class="form-control" required>
-                    <div class=\"invalid-feedback\">
-                        ¡Debes establecer un comando de instalación!
+                    <div class="invalid-feedback">
+                        ¡Debes establecer un comando de instalación!<br>
+                        ¡Debe aparecer $name!
                     </div>
                     <div class="text-muted">Usa <strong>\$name</strong> para obtener el nombre del proyecto</div>
                 </div>
@@ -779,14 +831,26 @@ export class Frameworks {
                 }
 
                 var install = $("#commandInstall");
+                var patron = /(?=.*\$name)(?=.{6,}$)/;
                 // 9 - composer | laravel new length
-                if (install.val().trim().length < 9) {
+                if (!patron.test(install.val())) {
                     errores++;
                     $(`#commandInstall ~ .invalid-feedback`).show();
                     install.addClass("is-invalid");
                 } else {
                     install.removeClass("is-invalid");
                     $(`#commandInstall ~ .invalid-feedback`).hide();
+                }
+
+                var frameRoot = $("#frameRoot");
+                if (!frameRoot.val().length > 0) {
+                    errores++;
+                    frameRoot.addClass("is-invalid");
+                    $(`#frameRoot ~ .invalid-feedback`).show();
+                } else {
+                    frameRoot.removeClass("is-invalid");
+                    $(`#frameRoot ~ .invalid-feedback`).hide();
+
                 }
 
                 // Si los datos son correctos, guardamos
@@ -806,6 +870,9 @@ export class Frameworks {
 
                     // Guardamos el comando de instalación
                     jsonschema.installCommand = form.find("#commandInstall").val();
+
+                    // Guardamos la ruta principal
+                    jsonschema.mainRoot = form.find("#frameRoot").val();
 
                     var datos = {
                         "data": jsonschema,
@@ -835,7 +902,7 @@ export class Frameworks {
                 }
             }
 
-        }, false, false);
+        }, null, false, false);
     }
 
     /**
@@ -1019,6 +1086,11 @@ export class Frameworks {
             };
             this._editor = this._parent.find(".json-editor-form").formBuilder(options);
             this._parent.find(".lds-spinner").remove();
+
+            // Limpiamos los residuos de consola del generador
+            interfaz.waitUntilElement(".form-builder", function(){
+                console.clear();
+            });
         }
     }
 }
