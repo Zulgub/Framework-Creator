@@ -6,15 +6,26 @@
 export class Interface {
 
     constructor(loadModules = true) {
-        this.listaFrameworksIntermediate();
+        this._listFrameworks = [];
 
-
+        /**
+         * Máximo numero de Slash, usado para indicar la ruta absoluta
+         */
+        this._maxSlash = window.location["pathname"].match(/\//g).length - 1;
         /**
          * Resguardo de notificaciones para ver si hay cambios
          */
+
+        /**
+         * Almacena la ruta fixeada
+         */
+        this._fixedPath = "";
+
         this._temporal = {};
-        if (loadModules)
+        if (loadModules) {
             this.loadModules();
+            this.vistaPrevia();
+        }
     }
 
     /**
@@ -29,8 +40,37 @@ export class Interface {
 
         if ($("#projectlist").length > 0) {
             this.listProject();
+            this.listaFrameworksIntermediate();
             $("#buscarProyecto").bind("keyup change", function () {
-                self.listProject($(this).val());
+                self.searchProject($(this).val());
+            });
+            $("#actualizarProyectos").click(function () {
+                self.listProject();
+            });
+        }
+
+        if ($(".delProject").length > 0) {
+            $(".delProject").click(function () {
+                var project = $(this).data("project");
+                self.modal("¿Desea borrar el proyecto?", "Perderás todo el contenido y no se podrá recuperar", "Borrar", function () {
+                    self.modal("Borrando...", 'Borrando proyecto <i class="fa fa-spinner fa-spin">');
+                    self.ajax("common", {
+                        api: "delProject",
+                        name: project
+                    }, "POST", "json", function (data) {
+                        if (data) {
+                            $("#modal").modal("toggle");
+                            self.alerta("trash", "Borrado", "Proyecto borrado", "success");
+                            setTimeout(function () {
+                                window.location = self.fixRoot(".");
+                            }, 2000);
+                        } else {
+                            self.alerta("exclamation-triangle", "Error", "Error al borrar el proyecto", "danger");
+                        }
+                    }, function () {
+                        self.alerta("exclamation-triangle", "Error", "Error al borrar el proyecto", "danger");
+                    });
+                }, null, false, false);
             });
         }
 
@@ -49,18 +89,19 @@ export class Interface {
 
                         self.modal("Requisitos del framework", `<div class="text-center">Comprobando requisitos <i class="fa fa-spinner fa-spin"></i></div>`);
 
-                        self.ajax("./assets/includes/class/runCode.php", {
+                        self.ajax("assets/includes/class/runCode.php", {
                             requirements: selected
                         }, "post", "json", function (datos) {
                             if (datos === true && $(".modal.show").length > 0) {
                                 self.modal(`Nuevo proyecto - ${selected}`, "", `Crear`, function () {
                                     /**
                                      * Lista negra de nombre de carpetas en linux y windows
+                                     * 
                                      * Primera parte - Comprueba que el nombre no sea así
                                      * Segunda parte - Comprueba que no exista esos caracteres en el nombre
                                      * Tercera parte - Comprueba que no termina en punto o espacio
                                      */
-                                    var blackList = /^(?!(CON|PRN|AUX|CLOCK|NUL|[A-Z]\:|COM[1-9]|LPT[1-9])$)(?!.*[\<\>\:\"\/\\\|\?\*])(?!^.*[\.\s]+$)/gi;
+                                    var blackList = /^(?!(CON|VENDOR|PRN|AUX|CLOCK|NUL|[A-Z]\:|COM[1-9]|LPT[1-9])$)(?!.*[\<\>\:\"\/\\\|\?\*])(?!^.*[\.\s]+$)/gi;
                                     var nombre = $("#name-project");
                                     if (nombre.val().length > 0)
                                         self.ajax("common", {
@@ -69,6 +110,8 @@ export class Interface {
                                             datos = datos.map(function (x) {
                                                 return x.toUpperCase()
                                             });
+                                            nombre = $("#name-project");
+
                                             if (datos.includes(nombre.val().toUpperCase())) {
                                                 $("#invalid-project-name").html("¡Ya existe un proyecto con ese nombre!").show();
                                                 nombre.focus();
@@ -84,6 +127,7 @@ export class Interface {
                                                     <li>A: - Z:</li>
                                                     <li>com1 - com9</li>
                                                     <li>lpt1 - lpt9</li>
+                                                    <li>vendor</li>
                                                 </ul>
                                                 No se permite nombres con los siguientes caracteres: <, >, :, ", \\, \/, \|, ?, *<br>
                                                 No puede acabar en punto o espacio`).show();
@@ -119,12 +163,13 @@ export class Interface {
                                     }
                                 }, null, false, false);
 
-                                self.ajax(`./assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
+                                self.ajax(`assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
                                     if (datos.forms && datos.commands) {
                                         self.waitUntilElement(".modal-body", function () {
                                             self._comands = self.doCommands(datos, self.ucFirst(selected));
                                             self.setFixedRender(".modal-body", datos);
-                                            $(".modal-body").prepend('<label class="form-label row px-4">Nombre del proyecto: <input type="text" id="name-project" class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Instroduce un nombre</div></label>');
+                                            $(".modal-body").prepend('<label class="form-label row px-4">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Instroduce un nombre</div></label>');
+                                            $("#modal").find("[autofocus]").focus();
                                         }, function () {
                                             console.error("#Error formRender_01");
                                         });
@@ -139,6 +184,7 @@ export class Interface {
                                 <ul>${datos}</ul></div>`);
                             }
                         }, function (datos) {
+                            console.log(datos);
                             console.error("Error al comprobar los requisitos");
                         });
 
@@ -195,8 +241,8 @@ export class Interface {
                         // En la ultima etapa le daremos un aspecto de que está a punto de acabar
                         if (porcentaje == 100)
                             porcentaje = 95;
-                        $(".drop-content").append(`<li id="install-${instalacion}">
-                        <div class="row pb-1 m-0 position-relative">
+                        $(".notify-content").append(`<div id="install-${instalacion}">
+                        <div class="row m-0 position-relative">
                             <div class="col-sm-12 h5">${instalacion}</div>
                             <div class="col-sm-3">${datos[instalacion].progress}</div>
                             <div class="col-sm-9">${datos[instalacion].name}</div>
@@ -204,7 +250,7 @@ export class Interface {
                             </progress>
                             <button class="btn btn-danger btn-sm position-absolute cancelInstall" data-install="${instalacion}" ><i class="fa fa-times"></i></button>
                         </div>
-                    </li>`);
+                    </div>`);
 
                         $(`.cancelInstall[data-install="${instalacion}"]`).click(function () {
                             sessionStorage.setItem(instalacion, "cancel");
@@ -258,7 +304,7 @@ export class Interface {
                 $(".notify").addClass("visible");
             } else {
                 $(".notify").removeClass("visible");
-                $(".notify-drop.show").removeClass("show");
+                $(".notify-card.show").removeClass("show");
             }
 
             // Buscamos si se ha terminado alguna instalación
@@ -399,7 +445,7 @@ export class Interface {
                 };
 
                 // Enviamos los comandos a ejecutar
-                self.ajax('./assets/includes/class/runCode.php', datos, 'post', 'json', null);
+                self.ajax('assets/includes/class/runCode.php', datos, 'post', 'json', null);
 
                 $(".modal-body").html(`<div class="w-100 text-center p-4">Iniciando <i class="fa fa-spinner fa-spin"></i></div>`);
                 $(".modal-footer .btn").hide();
@@ -435,17 +481,29 @@ export class Interface {
     }
 
     /**
+     * Busca un proyecto en la lista de proyectos
+     * @param {String} buscar nombre del proyecto
+     */
+    searchProject(buscar = "") {
+        if (buscar != "") {
+            $(".project").addClass("d-none");
+            $(`.project[data-name*="${buscar.toUpperCase()}"]`).removeClass("d-none");
+        } else
+            $(".project").removeClass("d-none");
+    }
+
+    /**
      * Lista los proyectos
      * @private
      */
-    listProject(buscar = null) {
-
+    listProject() {
+        var self = this;
         this.ajax('common', {
-            "search": buscar,
             "api": "projectList"
         }, undefined, undefined, function (data) {
             $("#projectlist").html(data);
             $('[data-toggle="tooltip"]').tooltip();
+            self.vistaPrevia();
         }, function () {
             $("#projectlist").html(`<div class="alert alert-danger w-100 text-center mx-2">
             Se ha producido un error al obtener los resultados.<br>
@@ -585,6 +643,33 @@ export class Interface {
     }
 
     /**
+     * Arragla una dirección debido al error producido por las urls amigables que cambian la ruta relativa /
+     * 
+     * @param {String} url Dirección 
+     * @return {String} Url modificada
+     */
+    fixRoot(url) {
+        var count = 0;
+        var path = this._fixedPath;
+        do {
+            if (count == 1)
+                path = "../";
+            var http = new XMLHttpRequest();
+            http.open("HEAD", path + url, false);
+            http.send();
+            var estatus = http.status == 404
+            if (estatus)
+                path = "../" + path
+
+            count++;
+        } while (estatus && count < this._maxSlash);
+
+        this._fixedPath = path;
+
+        return path + url;
+    }
+
+    /**
      * Establece una consulta ajax
      * @param {String} url Donde se van a enviar y recibir datos
      * @param {JSON} data Datos enviados
@@ -597,7 +682,9 @@ export class Interface {
 
         // Area de intercambio de información común
         if (url == "common")
-            url = './assets/includes/class/ajax_connect.php';
+            url = 'assets/includes/class/ajax_connect.php';
+
+        url = this.fixRoot(url);
 
         var config = {
             url: url,
@@ -659,6 +746,43 @@ export class Interface {
     }
 
     /**
+     * Camia el iframe por una captura de éste
+     */
+    vistaPrevia() {
+
+        $("[data-name=\"UNKNOWN INFO\"] .preview-img").remove();
+        var div = document.createElement('div');
+        $("[data-name=\"UNKNOWN INFO\"] .thumbnail").append(div);
+        $("[data-name=\"UNKNOWN INFO\"] .thumbnail div").addClass("uknown-project");
+
+        $("#buscarProyecto").attr("readonly", "readonly");
+
+        $(".preview-img").on("load", function () {
+            var iframe = $(this);
+            var parent = $(this).parent();
+            // "thumbnail-container"
+            setTimeout(function () {
+                html2canvas(iframe.contents().find('body')[0], {
+                    logging: true,
+                    allowTaint: true,
+                }).then(function (canvas) {
+                    var data = canvas.toDataURL();
+                    var div = document.createElement('div');
+                    parent.append(div);
+                    parent.find("div").css({
+                        "background": `url(${data})`,
+                        "background-color": "#fff"
+                    });
+                    iframe.remove();
+                    // console.clear();
+                    if ($(".thumbnail").toArray().length == $(".thumbnail > div").toArray().length)
+                        $("#buscarProyecto").removeAttr("readonly");
+                });
+            }, 300);
+        });
+    }
+
+    /**
      * Actualiza el atributo
      */
     listaFrameworksIntermediate() {
@@ -677,8 +801,9 @@ export class Interface {
 
     /**
      * Obtiene la lista de frameworks y ejecuta el callBack cuando los datos están listos
+     * 
+     * @param {Boolean} actualizar Indica si se debe actualizar
      * @param {Function} CallBack ejecuta la función cuando se recibe la lista
-     * @return {Array} Lista de frameworks
      */
     getFrameList(actualizar = false, callBack) {
         if (callBack != null) {

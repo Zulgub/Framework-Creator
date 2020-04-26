@@ -12,21 +12,7 @@ RewriteCond %{REQUEST_FILENAME}\.html -f
 RewriteRule ^(.*)$ ./$1 [L,R=301]
 Options +FollowSymLinks
 Options -Indexes
+
+RewriteCond %{REQUEST_URI} ^(.*)
 RewriteRule ^([^.]*$) index.php?vista=$1 [L]
 </IfModule>
-#=============================================================================#
-#          HEADERS, CACHING AND OPTIMIZATION
-#=============================================================================#
-#-> http://www.htaccesselite.com/htaccess/cache-control-http-headers-vt65.html
-#      300   5 M
-#     2700  45 M
-#     3600   1 H
-#    54000  15 H
-#    86400   1 D
-#   518400   6 D
-#   604800   1 W
-#  1814400   3 W
-#  2419200   1 M
-# 26611200  11 M
-# 29030400   1 Y (never expire)
-###########

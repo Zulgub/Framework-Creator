@@ -1,16 +1,6 @@
 <?php
 
 /**
- * Queda por hacer
- * 
- * ejecución de comandos, notificación de cuanto haya terminado
- * 
- * poder ver el progreso
- * 
- * comprobar requisitos
- */
-
-/**
  * Clase App
  * 
  * Contiene todos los datos a mostrar y funciones de la aplicación
@@ -71,10 +61,9 @@ class App
 
     /**
      * Lista los proyectos creados
-     * @param String $buscar Busca un proyecto
      * @return String Información del proyecto (Elementos html)
      */
-    public function projects($buscar = null)
+    public function projects()
     {
         $resultado = "";
         $ruta = '../../../projects/';
@@ -85,14 +74,16 @@ class App
                 'name' => $this->infoProject($ruta . $archivo, "name")
             );
 
-            if ($buscar == null || strpos(strtoupper(" " . $project["name"]), strtoupper($buscar)) != false) {
-
-                $resultado .= '
-            <div class="col-xl-3 my-1">
+            $resultado .= '
+            <div class="col-xl-3 my-1 project" data-name="' . strtoupper($project["name"]) . '">
                 <div class="card">
                     <a href="./projects/' . $archivo . '/settings">
-                        <div class="img-project rounded-top">
-                            <img src="assets/img/frameworks/' . $project["framework"] . '.png" class="card-img-top h-100" alt="' . $project["framework"] . '">
+                        <div class="img-project rounded-top preview position-relative">
+                            <div class="thumbnail-container w-100 h-100">
+                                <div class="thumbnail">
+                                    <iframe class="preview-img" src="projects/' . $archivo . '" frameborder="0"></iframe>
+                                </div>
+                            </div>
                         </div>
                     </a>
                     <div class="card-body">
@@ -111,7 +102,7 @@ class App
                     </div>
                 </div>
             </div>';
-            }
+            
         }
 
 
@@ -143,6 +134,66 @@ class App
     }
 
     /**
+     * Converts bytes into human readable file size.
+     *
+     * @param string $bytes
+     * @return string human readable file size (2,87 Мб)
+     * @author Mogilev Arseny
+     */
+    private function fileSizeConvert($bytes)
+    {
+        $bytes = floatval($bytes);
+        $arBytes = array(
+            0 => array(
+                "UNIT" => "TB",
+                "VALUE" => pow(1024, 4)
+            ),
+            1 => array(
+                "UNIT" => "GB",
+                "VALUE" => pow(1024, 3)
+            ),
+            2 => array(
+                "UNIT" => "MB",
+                "VALUE" => pow(1024, 2)
+            ),
+            3 => array(
+                "UNIT" => "KB",
+                "VALUE" => 1024
+            ),
+            4 => array(
+                "UNIT" => "B",
+                "VALUE" => 1
+            ),
+        );
+
+        foreach ($arBytes as $arItem) {
+            if ($bytes >= $arItem["VALUE"]) {
+                $result = $bytes / $arItem["VALUE"];
+                $result = str_replace(".", ",", strval(round($result, 2))) . " " . $arItem["UNIT"];
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Obtiene el tamaño total de la carpeta
+     * @param String $dir Ruta
+     * @return Float tamaño total
+     */
+    public function getBinderSize($dir, $convert = true)
+    {
+        $totalfiles = 0;
+        if (file_exists($dir)) {
+            $files = array_diff(scandir($dir), array('.', '..'));
+            foreach ($files as $file) {
+                $totalfiles += (is_dir("$dir/$file")) ? $this->getBinderSize("$dir/$file", false) : filesize("$dir/$file");
+            }
+        }
+        return $convert ? $this->fileSizeConvert($totalfiles) : $totalfiles;
+    }
+
+    /**
      * Lista de frameworks disponibles
      */
     public function listFrameworks()
@@ -166,23 +217,27 @@ class App
     /**
      * Obtiene los datos del framework
      * @param String $buscar Busca un frameworks
-     * @param Int $dir Indica el origen de la ruta a buscar
+     * @param String $dir Indica la ruta donde buscar
+     * @param Int $count Indica las veces que se ha buscado en otra ruta, controla que se ejecute solo una vez
      * @return Array Datos del framework
      */
-    public function getDataFramework($buscar = null, $dir = 1)
+    public function getDataFramework($buscar = null, $dir = "./assets/includes/vistas/config/frameworks/", $count = 0)
     {
         $resultado = [];
-        $dir = $dir == 1 ? "./assets/includes/vistas/config/frameworks/" : "../vistas/config/frameworks/";
-        if (is_null($buscar)) {
-            $directorio = opendir($dir);
-            while ($archivo = readdir($directorio)) {
-                $info = new SplFileInfo($archivo);
-                if ($info->getExtension() == "json") {
-                    $resultado[$info->getFilename()] = json_decode(file_get_contents($dir . $archivo), true);
+        if (file_exists($dir)) {
+            if (is_null($buscar)) {
+                $directorio = opendir($dir);
+                while ($archivo = readdir($directorio)) {
+                    $info = new SplFileInfo($archivo);
+                    if ($info->getExtension() == "json") {
+                        $resultado[$info->getFilename()] = json_decode(file_get_contents($dir . $archivo), true);
+                    }
                 }
+            } else if (file_exists($dir . $buscar . ".json")) {
+                $resultado = json_decode(file_get_contents($dir . $buscar . ".json"), true);
             }
-        } else {
-            $resultado = json_decode(file_get_contents($dir . $buscar . ".json"), true);
+        } elseif ($count == 0) { // Busca automáticamente en la misma ruta con diferente origen
+            $resultado = $this->getDataFramework($buscar, "../vistas/config/frameworks/", $count++);
         }
         return $resultado;
     }

@@ -11,11 +11,6 @@ Dependencias
   </a>  
 </p>
 
-# Complementos usados
-<ul>
-  <li><a href="https://formbuilder.online/">FormBuilder</a></li>
-  <li><a href="https://editor.datatables.net/">Datatables</a></li>
-</ul>
-
-# Instalación
-Una vez descargado el proyecto, en cuanto accedamos a el, se nos abrirá una interfaz de instalación que facilitará al usuario la configuración de la aplicación.
+# Uso
+Tan fácil como descargar el repositorio y poner la web en marcha.
+<br>No necesita instalación

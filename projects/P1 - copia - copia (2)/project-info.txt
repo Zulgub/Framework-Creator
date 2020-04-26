@@ -1,2 +1,0 @@
-name=ZF 1
-framework=zend framework

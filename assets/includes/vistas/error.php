@@ -1,7 +1,4 @@
 <?php
-$error = isset($_GET["error"]) && !empty($_GET["error"]) ? $_GET["error"] : "404";
-$info = isset($_GET["info"]) && !empty($_GET["info"]) ? $_GET["info"] : "";
-
 $error = isset($code) && !empty($code) ? $code : "404";
 $info = isset($infoCode) && !empty($infoCode) ? $infoCode : "File not found";
 ?>

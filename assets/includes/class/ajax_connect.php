@@ -70,6 +70,10 @@ class Ajax_connect
 
             if (file_exists("../../../projects/$nombre"))
                 $get = $this->delTree("../../../projects/$nombre");
+
+            // Si cancelamos la instalación de manera temprana, puede quedar como residuo la carpeta vendor que crea composer
+            if (file_exists("../../../projects/vendor"))
+                $get = $this->delTree("../../../projects/vendor");
         }
 
         return $get;
@@ -82,8 +86,7 @@ class Ajax_connect
     {
         switch ($api) {
             case 'projectList':
-                $buscar = isset($_POST["search"]) && !empty($_POST["search"]) ? addslashes($_POST["search"]) : null;
-                $resultado = $GLOBALS["app"]->projects($buscar);
+                $resultado = $GLOBALS["app"]->projects();
                 break;
             case 'saveFile':
                 if (isset($_POST["oldFile"]) && !empty($_POST["oldFile"]))
@@ -121,6 +124,12 @@ class Ajax_connect
                 if (isset($_POST["name"]) && !empty($_POST["name"])) {
                     $get = $this->cancelInstall($_POST["name"]);
                 }
+                $resultado = $get;
+                break;
+            case 'delProject':
+                $get = false;
+                if (isset($_POST["name"]) && !empty($_POST["name"]))
+                    $get = $this->delTree("../../../projects/{$_POST["name"]}");
                 $resultado = $get;
                 break;
             default:

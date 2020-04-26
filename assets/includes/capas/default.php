@@ -6,40 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $GLOBALS["name"]; ?></title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link href="assets/fontawesome-5.12/css/all.css" rel="stylesheet">
-    <script defer src="assets/js/jquery-3.4.1.min.js"></script>
-    <script defer src="assets/js/jquery-ui.min.js"></script>
-    <script defer src="assets/js/popper.min.js"></script>
-    <script defer src="assets/js/bootstrap.min.js"></script>
-    <script defer src="assets/js/removeBanner.js"></script>
-    <script defer src="assets/js/push.min.js"></script>
+    <link rel="stylesheet" href="{{assets(assets/css/bootstrap.min.css)}}">
+    <link rel="stylesheet" href="{{assets(assets/css/main.css)}}">
+    <link href="{{assets(assets/fontawesome-5.12/css/all.css)}}" rel="stylesheet">
+    <script defer src="{{assets(assets/js/jquery-3.4.1.min.js)}}"></script>
+    <script defer src="{{assets(assets/js/jquery-ui.min.js)}}"></script>
+    <script defer src="{{assets(assets/js/popper.min.js)}}"></script>
+    <script defer src="{{assets(assets/js/bootstrap.min.js)}}"></script>
+    <script defer src="{{assets(assets/js/removeBanner.js)}}"></script>
+    <script defer src="{{assets(assets/js/push.min.js)}}"></script>
 
-    <!-- Editor de formularios JSON -->
-    <script defer src="assets/js/forms/form-builder.min.js"></script>
-    <script defer src="assets/js/forms/form-render.min.js"></script>
+    <!-- @css -->
 
-    <!-- Editor de tablas -->
-    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/datatables.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/generator-base.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/editor.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/tableEditor/rowReorder.dataTables.min.css">
+    <!-- @js -->
 
-
-    <script defer type="text/javascript" src="assets/js/tableEditor/jquery.dataTables.min.js"></script>
-    <script defer type="text/javascript" src="assets/js/tableEditor/dataTables.rowReorder.min.js"></script>
-    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/datatables.min.js"></script>
-    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/dataTables.editor.min.js"></script>
-    <script defer type="text/javascript" charset="utf-8" src="assets/js/tableEditor/editor.bootstrap4.min.js"></script>
-    <script defer src="assets/js/main.js" type="module"></script>
+    <script defer src="{{assets(assets/js/main.js)}}" type="module"></script>
 </head>
 
 <body class="d-flex flex-column">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-            <a class="navbar-brand" href="./"><i class="fa fa-home"></i></a>
+            <a class="navbar-brand" href="{{assets(.)}}"><i class="fa fa-home"></i></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -47,34 +34,36 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" data-index="2" href="./config"><i class="fa fa-cog"></i> Configuración</a>
+                        <a class="nav-link" data-index="2" href="{{assets(config)}}"><i class="fa fa-cog"></i> Configuración</a>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right mr-4">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle notify text-white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><strong class="installing">1</strong></a>
-                        <ul class="dropdown-menu notify-drop p-2">
-                            <div class="notify-drop-title">
-                                <div class="row">
-                                    <div class="col-12 text-center">Instalaciones en curso <strong class="installing">1</strong></div>
+                <ul class="navbar-nav navbar-right mr-4">
+                    <li class="nav-item dropdown">
+                        <a class="notify text-white" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <strong class="installing">1</strong>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-default p-0 notify-card">
+                            <div class="card border-0">
+                                <h6 class="card-header text-center">Instalaciones en curso <strong class="installing">1</strong></h6>
+                                <div class="card-body notify-body p-0">
+                                    <p class="card-text notify-content"></p>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <buton type="button" class="btn btn-danger btn-sm mt-1 cancelAll"><i class="fa fa-stop"></i> Cancelar todos</button>
                                 </div>
                             </div>
-                            <!-- end notify title -->
-                            <!-- notify content -->
-                            <div class="drop-content px-2">
-                            </div>
-                            <div class="notify-drop-footer text-center">
-                                <buton type="button" class="btn btn-danger btn-sm mt-1 cancelAll"><i class="fa fa-stop"></i> Cancelar todos</button>
-                            </div>
-                        </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
     <div class="container-fluid flex-grow pt-4">
-        <?php $this->contenido(); ?>
+        @contenido
     </div>
+
+    <!-- Alertas -->
+
     <div aria-live="polite" aria-atomic="true" class="fixed-bottom w-25 ml-auto p-1" id="alertas">
     </div>
 

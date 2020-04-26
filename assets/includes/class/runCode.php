@@ -11,6 +11,7 @@ header('Content-Type: application/json');
  * @param String $name Nombre del progreso
  * @param String $progress Progreso
  * @param String $fileName Nombre del fichero de salida
+ * @return Boolean Si se está cancelando la instalación
  */
 function runExec($root, $cmd, $name, $progress, $fileName)
 {
@@ -34,6 +35,8 @@ function runExec($root, $cmd, $name, $progress, $fileName)
             $status = proc_get_status($process)["running"];
         } while ($status);
     }
+
+    return isset($data["cancel"]);
 }
 
 /**
@@ -43,18 +46,19 @@ function runExec($root, $cmd, $name, $progress, $fileName)
  */
 function commands($data)
 {
+    $cancel = false;
     $root = "../../../projects";
     $max = count($data["comandos"]) + 1;
-    runExec($root, " && " . $data["install"], "Instalando", "1/$max", $data["root"]);
+    $cancel = runExec($root, " && " . $data["install"], "Instalando", "1/$max", $data["root"]);
 
     $count = 2;
 
     foreach ($data["comandos"] as $key => $value) {
-        runExec($root . $data["root"], " && " . $value, $key, $count++ . "/" . $max, $data["root"]);
+        $cancel = runExec($root . $data["root"], " && " . $value, $key, $count++ . "/" . $max, $data["root"]);
     }
 
     // Creamos el archivo de información
-    if (file_exists($root . $data["root"])) {
+    if (file_exists($root . $data["root"]) && !$cancel) {
         file_put_contents($root . $data["root"] . "/project-info.txt", "name=" . substr($data["root"], 1) . "\nframework={$data["framework"]}
         ");
     }
@@ -75,17 +79,19 @@ function requirements($framework)
     require_once("./app.php");
     $app = new App;
 
-    $resultado = true;
-
-    $requisitos = $app->getDataFramework($framework, 2)["requirements"];
+    $requisitos = $app->getDataFramework($framework);
 
     $error = "";
 
-    foreach ($requisitos as $key => $value) {
-        exec($value["comando"], $output, $return);
-        if ($return == 1)
-            $error .= "<li>" . $value["nombre"] . "</li>";
-    }
+    $resultado = true;
+    if (isset($requisitos["requirements"])) {
+        foreach ($requisitos["requirements"] as $key => $value) {
+            exec($value["comando"], $output, $return);
+            if ($return == 1)
+                $error .= "<li>" . $value["nombre"] . "</li>";
+        }
+    } else
+        $resultado = false;
 
     return empty($error) ? $resultado : $error;
 }

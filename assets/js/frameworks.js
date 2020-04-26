@@ -1105,7 +1105,7 @@ $(".json-editor-form").each(function () {
     var self = this;
     var json = $(this).data("json");
 
-    interfaz.ajax("./assets/includes/vistas/config/frameworks/" + json, null, null, undefined, function (datos) {
+    interfaz.ajax("assets/includes/vistas/config/frameworks/" + json, null, null, undefined, function (datos) {
         listFrameworks.push(new Frameworks(datos.name, json, datos.requirements, datos.forms, datos.commands));
     }, function () {
         $(self).html(`<div class="alert alert-danger w-100 text-center mx-2">
