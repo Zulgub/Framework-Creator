@@ -6,7 +6,8 @@
     <div class="col-xl-12">
         <div class="card">
             <h5 class="card-header">Frameworks <button id="newFramework" class="btn btn-success float-right" data-toggle="modal" data-target="#modal"><i class="fa fa-plus"></i> Añadir</button>
-                <button id="loadFile" class="btn btn-secondary float-right mr-2" data-toggle="modal" data-target="#modal"><i class="fa fa-file-upload"></i> Cargar archivo de configuración</button></h5>
+                <label for="files" class="btn btn-secondary float-right mr-2"><i class="fa fa-file-upload"></i> Cargar archivo de configuración </label>
+                <input type="file" id="files" class="d-none" name="files" /></h5>
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-3">

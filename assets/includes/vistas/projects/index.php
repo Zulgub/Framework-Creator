@@ -1,4 +1,5 @@
 @capa("project")
+@addTitle(" - <?php echo $get["name"]; ?>")
 @addJs("assets/js/forms/"=>["form-render.min.js"],"assets/js/preview/"=>["html2canvas.js"])
 <div class="row">
   <div class="col-12">
@@ -10,9 +11,16 @@
             <p class="card-text">
               <div class="form-group">
                 <label for="name">Nombre del proyecto</label>
-                <input type="text" name="name" id="name" value="<?php echo $get["proyecto"]; ?>" class="form-control" autofocus placeholder="Nombre del proyecto">
+                <input type="text" name="name" id="name" value="<?php echo $get["name"]; ?>" class="form-control" autofocus placeholder="Nombre del proyecto">
                 <div class="invalid-feedback">
                   ¡Debe establecer un nombre!
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="folder">Nombre de la carpeta</label>
+                <input type="text" name="folder" id="folder" value="<?php echo $get["proyecto"]; ?>" class="form-control" autofocus placeholder="Nombre del proyecto">
+                <div class="invalid-feedback">
+                  ¡Debe establecer un nombre para la carpeta!
                 </div>
               </div>
             </p>

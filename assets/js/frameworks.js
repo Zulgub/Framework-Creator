@@ -6,8 +6,6 @@ var interfaz = new Interface(false);
 /**
  * Queda por hacer
  * 
- * loadConfigFile
- * 
  * Por añadir (Más adelante) Botones de acceso rápido (DataTable)
  */
 
@@ -133,9 +131,100 @@ export class Frameworks {
         });
 
         this.commandsTable();
-        interfaz.getFrameList(false, function (list) {
+
+        interfaz.getFrameList(true, function (list) {
+            console.log(list);
             self.checkErrors(false, list);
         })
+
+        $("#files").off();
+        $("#files").on("change", function (e) {
+            self.handleFileSelect(e);
+        });
+    }
+
+    /**
+     * Indica un error del archivo subido
+     * 
+     * @param {Event} evt Evento
+     */
+    errorHandler(evt) {
+        var msg = "";
+        switch (evt.target.error.code) {
+            case evt.target.error.NOT_FOUND_ERR:
+                msg = "Archivo no encontrado";
+                break;
+            case evt.target.error.NOT_READABLE_ERR:
+                msg = "No se puede leer el archivo";
+                break;
+            default:
+                msg = "Ocurrió un error al leer el archivo";
+        };
+
+        interfaz.alerta("exclamation-triangle", "Error", msg, "danger", false);
+    }
+
+    /**
+     * Lee el archivo
+     * 
+     * @param {Event} evt Evento
+     */
+    handleFileSelect(evt) {
+        var self = this;
+        var reader = new FileReader();
+        reader.onerror = this.errorHandler;
+        reader.onloadstart = function (e) {
+            interfaz.alerta("spinner fa-spin", "Cargando", "Leyendo archivo", "success");
+        };
+
+        reader.onload = function (e) {
+            var fileName = $(evt.target).val().replace("C:\\fakepath\\", "");
+            var ext = fileName.split(".");
+            ext = ext[ext.length - 1];
+
+            if (ext == 'json') {
+                try {
+                    var contenido = JSON.parse(reader.result.replace(/(^"|"$)/g, "").replace(/\\"/g, "\"").replace(/\\+/g, "\\"));
+
+                    interfaz.getFrameList(true, function (lista) {
+
+                        if (lista.includes(contenido.name)) {
+                            interfaz.alerta("exclamation-triangle", "Error", "Ya existe un framework con ese nombre", "danger", false);
+                        } else {
+
+                            interfaz.ajax("common", {
+                                api: "saveFile",
+                                nameFile: fileName,
+                                data: contenido
+                            }, "POST", "json", function (datos) {
+                                if (datos) {
+                                    interfaz.alerta("upload", "Configuración guardada", "Archivo guardado", "success");
+                                    setTimeout(function () {
+                                        sessionStorage.setItem("target", contenido.name);
+                                        location.reload();
+                                    }, 2000);
+                                } else {
+                                    interfaz.alerta("exclamation-triangle", "Error", "Error al subir el archivo", "danger", false);
+                                }
+
+                            }, function () {
+                                interfaz.alerta("exclamation-triangle", "Error", "Error al subir el archivo", "danger", false);
+                            });
+                        }
+                    });
+
+                } catch (error) {
+                    interfaz.alerta("exclamation-triangle", "Error", "Formato JSON inválido", "danger", false);
+                }
+
+            } else {
+                interfaz.alerta("exclamation-triangle", "Error", "Sólo se permiten archivos con extensión JSON", "danger", false);
+
+            }
+        }
+
+        // Read in the image file as a binary string.
+        reader.readAsBinaryString(evt.target.files[0]);
     }
 
     /**
@@ -233,18 +322,19 @@ export class Frameworks {
 
         editor.on('preSubmit', function (e, o, action) {
             if (action !== 'remove') {
+
                 var name = this.field('nombre');
                 if (name.val() != undefined) {
                     if (!name.val().trim().length > 0) {
                         name.error('¡Debes introducir un nombre!');
                         name.focus();
                     }
-
                     var repetido = false;
 
                     for (let index = 0; index < requisitos.rows().data().length; index++) {
                         var comando = requisitos.rows().data()[index];
-                        if (comando.nombre == name.val()) {
+
+                        if (comando.nombre == name.val() && comando.DT_RowId != Object.keys(o.data)[0]) {
                             repetido = true;
                         }
                     }
@@ -571,7 +661,7 @@ export class Frameworks {
 
                     for (let index = 0; index < self._table.rows().data().length; index++) {
                         var comando = self._table.rows().data()[index];
-                        if (comando.nombre == name.val()) {
+                        if (comando.nombre == name.val() && comando.DT_RowId != Object.keys(o.data)[0]) {
                             repetido = true;
                         }
                     }
@@ -1088,7 +1178,7 @@ export class Frameworks {
             this._parent.find(".lds-spinner").remove();
 
             // Limpiamos los residuos de consola del generador
-            interfaz.waitUntilElement(".form-builder", function(){
+            interfaz.waitUntilElement(".form-builder", function () {
                 console.clear();
             });
         }

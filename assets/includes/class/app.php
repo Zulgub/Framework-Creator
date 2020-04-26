@@ -102,7 +102,6 @@ class App
                     </div>
                 </div>
             </div>';
-            
         }
 
 
@@ -253,9 +252,19 @@ class App
             $active = empty($resultado) ? " fade show active" : "";
             // Obtenemos el contenido del archivo
 
+            $root = isset($data["mainRoot"]) ? $data["mainRoot"] : "";
+
+            $nombre = isset($data["name"]) ? $data["name"] : "";
+
             $nombreHTML = preg_replace('/\s/', "_", $data["name"]);
 
-            $resultado .= "<div class=\"tab-pane{$active}\" id=\"{$nombreHTML}\" role=\"tabpanel\" aria-labelledby=\"list-{$nombreHTML}-list\">
+
+            $install = isset($data["installCommand"]) ? $data["installCommand"] : "";
+
+            if (empty($nombreHTML))
+                $resultado .= "<div class=\"alert alert-danger w-100 text-center\">Hay un error grave en la estructura resive el archivo $key</div>";
+            else
+                $resultado .= "<div class=\"tab-pane{$active}\" id=\"{$nombreHTML}\" role=\"tabpanel\" aria-labelledby=\"list-{$nombreHTML}-list\">
                 <div class=\"float-left\">
                     <button class=\"btn btn-success save\"><i class=\"fa fa-save\"></i> Guardar</button>
                     <button class=\"btn btn-danger delete\" data-toggle=\"modal\" data-target=\"#modal\"><i class=\"fa fa-trash\"></i> Borrar</button>
@@ -273,7 +282,7 @@ class App
                             <div class=\"form-group row\">
                                 <label for=\"name-{$nombreHTML}\" class=\"col-xl-2 col-form-label\">Nombre: </label>
                                 <div class=\"col-sm-10\">
-                                    <input type=\"text\" id=\"name-{$nombreHTML}\" class=\"form-control\" value=\"{$data["name"]}\" required>
+                                    <input type=\"text\" id=\"name-{$nombreHTML}\" class=\"form-control\" value=\"{$nombre}\" required>
                                     <div class=\"invalid-feedback\">
                                         ¡Debe escribir un nombre para el framework! Mínimo 5 carácteres
                                     </div>
@@ -299,7 +308,7 @@ class App
                             <div class=\"form-group row\">
                                 <label for=\"main-root-{$nombreHTML}\" class=\"col-xl-4 col-form-label\">Ruta principal</label>
                                 <div class=\"col-sm-10\">
-                                    <input type=\"text\" id=\"main-root-{$nombreHTML}\" class=\"form-control\" value=\"{$data["mainRoot"]}\" placeholder=\"ej: public\">
+                                    <input type=\"text\" id=\"main-root-{$nombreHTML}\" class=\"form-control\" value=\"{$root}\" placeholder=\"ej: public\">
                                     <div class=\"invalid-feedback\">¡Debes indicar la ruta principal!</div>
                                     <div class=\"text-muted\">La ruta principal se usará para enlazar con la vista del proyecto</div>
                                 </div>
@@ -307,7 +316,7 @@ class App
                             <div class=\"form-group row\">
                                 <label for=\"install-command-{$nombreHTML}\" class=\"col-xl-4 col-form-label\">Comando de instalación:</label>
                                 <div class=\"col-sm-10\">
-                                    <input type=\"text\" id=\"install-command-{$nombreHTML}\" class=\"form-control\" value=\"{$data["installCommand"]}\" required>
+                                    <input type=\"text\" id=\"install-command-{$nombreHTML}\" class=\"form-control\" value=\"{$install}\" required>
                                     <div class=\"invalid-feedback\">
                                         ¡Debes establecer un comando de instalación!
                                         <br>

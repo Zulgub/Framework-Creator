@@ -132,6 +132,9 @@ class Ajax_connect
                     $get = $this->delTree("../../../projects/{$_POST["name"]}");
                 $resultado = $get;
                 break;
+            case 'session':
+                $resultado = $_SESSION;
+                break;
             default:
                 $resultado = null;
                 break;

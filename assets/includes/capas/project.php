@@ -81,9 +81,12 @@
         <div id="content" class="p-4">
             <div class="row pl-4">
                 <div class="col-md-6 my-1">
-                    <h4 clasS="mb-0"><?php echo $get["proyecto"]; ?></h4>
+                    <h4 clasS="mb-0"><?php echo $get["name"]; ?></h4>
                     <span data-toggle="tooltip" class="badge badge-warning p-2" data-placement="bottom" title="Framework"><i class="fa fa-puzzle-piece"></i> <?php echo $get["data"]["name"]; ?></span>
                     <span data-toggle="tooltip" class="badge badge-info p-2" data-placement="bottom" title="Tamaño del proyecto"><i class="fa fa-hdd"></i> <?php echo $get["size"]; ?></span>
+                    <a download="<?php echo preg_replace('/\s+/','',$get["name"]); ?>.zip" class="badge badge-secondary p-2 descarga" href="{{assets(projects/<?php echo $get["proyecto"]; ?>/download)}}">
+                        <i class="fa fa-download"></i> Descargar
+                    </a>
                 </div>
                 <div class="col-md-6 my-1 text-right">
                     <button tyoe="button" class="btn btn-danger delProject" data-project="<?php echo $get["proyecto"]; ?>" data-toggle="modal" data-target="#modal">

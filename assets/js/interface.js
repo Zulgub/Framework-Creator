@@ -38,6 +38,23 @@ export class Interface {
             self.modal("Permitir notificaciones", "Permite a este sitio que te envíe notificaciones cuando no estés en la web", "Aceptar", null, null, true);
         });
 
+        if ($(".descarga").length > 0) {
+            $(".descarga").click(function (e) {
+                var btn = $(this);
+                if (btn.hasClass("stop")) {
+                    e.preventDefault();
+                    console.log("Evitado");
+                } else {
+                    setTimeout(function () {
+                        btn.removeClass("stop").html(`<i class="fa fa-download"></i> Descargar`);
+                    }, 1000);
+                }
+
+
+                btn.addClass("stop").html(`Creando archivo <i class="fa fa-spinner fa-spin"></i>`);
+            });
+        }
+
         if ($("#projectlist").length > 0) {
             this.listProject();
             this.listaFrameworksIntermediate();
@@ -195,7 +212,7 @@ export class Interface {
             });
         });
 
-        setInterval(function () {
+        this._notify = setInterval(function () {
             self.actualizarNotificaciones();
         }, 600);
 
@@ -321,6 +338,9 @@ export class Interface {
                         delete self._temporal[temporal];
                     }
                 });
+        }, function () {
+            clearInterval(self._notify);
+            console.error("Se ha perdido la conexión");
         });
     }
 
@@ -488,8 +508,16 @@ export class Interface {
         if (buscar != "") {
             $(".project").addClass("d-none");
             $(`.project[data-name*="${buscar.toUpperCase()}"]`).removeClass("d-none");
+            if ($(".project").toArray().length == $(".project.d-none").toArray().length) {
+                if ($("#projectlist .alert").length == 0)
+                    $("#projectlist").append(`<div class="alert alert-info w-100 mx-3 text-center">No se han encontrado proyectos</div>`);
+            } else {
+                $("#projectlist .alert").remove();
+            }
         } else
             $(".project").removeClass("d-none");
+        if ($("#projectlist .alert").length == 0)
+            $("#projectlist .alert").remove();
     }
 
     /**
@@ -654,12 +682,16 @@ export class Interface {
         do {
             if (count == 1)
                 path = "../";
-            var http = new XMLHttpRequest();
-            http.open("HEAD", path + url, false);
-            http.send();
-            var estatus = http.status == 404
-            if (estatus)
-                path = "../" + path
+            try {
+                var http = new XMLHttpRequest();
+                http.open("HEAD", path + url, false);
+                http.send();
+                var estatus = http.status == 404
+                if (estatus)
+                    path = "../" + path
+            } catch (error) {
+                estatus = false;
+            }
 
             count++;
         } while (estatus && count < this._maxSlash);
