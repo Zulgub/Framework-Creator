@@ -19,3 +19,4 @@ Dentro de la herramienta existe un apartado de documentación.
 
 # AVISO
 Esta herramienta no funcionará en un hosting, sólo en local o en un VPS.
+
