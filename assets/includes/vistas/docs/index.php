@@ -37,6 +37,10 @@
                     <div class="card-body">
                         <h3 class="card-title"><?php echo $GLOBALS["name"]; ?></h3>
                         <div class="card-text">
+                            <div class="alert alert-warning">
+                                <i class="fa fa-exclamation-triangle"></i> Esta herramienta no funcionará en un hosting, sólo en local o en un VPS.
+                            </div>
+
                             Esta herramienta está pensada para ayudar al desarrollador con los frameworks, facilitando su uso.<br>
                             Los requisitos principales de esta herramienta varían según el framework que quieras usar. Pero principalmente, con las configuraciones por defecto, esos son los requisitos:
                             <ul>
@@ -296,7 +300,7 @@
                                 </figcaption>
                             </figure>
 
-                            En la segunda sección de esta página, encontramos los elementos interactivos que hemos configurado en la sección de configuración del framework. 
+                            En la segunda sección de esta página, encontramos los elementos interactivos que hemos configurado en la sección de configuración del framework.
 
                             <figure>
                                 <img src="{{assets(assets/img/docs/setting/example.png)}}" alt="Notificación de ejecución de una configuración" class="img-fluid">
