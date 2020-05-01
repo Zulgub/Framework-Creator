@@ -34,7 +34,13 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" data-index="2" href="{{assets(config)}}"><i class="fa fa-cog"></i> Configuración</a>
+                        <a class="nav-link" data-index="2" href="{{assets(config)}}"><i class="fa fa-cogs"></i> Configuración</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-index="2" href="{{assets(docs)}}"><i class="fa fa-book"></i> Documentación</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-index="2" href="{{assets(info)}}"><i class="fa fa-info"></i> Información</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav navbar-right mr-4">

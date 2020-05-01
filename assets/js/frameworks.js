@@ -3,11 +3,6 @@ import {
 } from "./interface";
 
 var interfaz = new Interface(false);
-/**
- * Queda por hacer
- * 
- * Por añadir (Más adelante) Botones de acceso rápido (DataTable)
- */
 
 /**
  * Controla los frameworks
@@ -25,122 +20,343 @@ export class Frameworks {
     _editor = null;
 
     /**
+     * Nombre del framework
+     */
+    _name;
+
+    /**
+     * Datos del archivo json
+     */
+    _datos;
+
+    /**
+     * Nombre del framework para uso especial (Se modificará, sin afectar a la estructura)
+     */
+    _tempName;
+
+    /**
+     * Nombre para estructuras html
+     */
+    _nameHTML;
+
+    /**
+     * Elemento padre
+     */
+    _parent;
+
+    /**
+     * Archivo de configuración
+     */
+    _file;
+
+    /**
+     * Lista de requisitos
+     */
+    _requirements;
+
+    /**
+     * Guardamos la lista de requisitos para ser usado en otros modulos
+     */
+    _requirementesData;;
+
+    /**
+     * Schema del framework
+     * */
+    _schema;
+
+    /**
+     * Schema quick
+     * */
+    _quick;
+
+    /**
+     * Ruta de archivos
+     */
+    _files;
+
+    /**
+     * Lista de comandos
+     */
+    _commands;
+
+    /**
+     * Estado bloqueado del botón de guardar
+     */
+    _lockSave;
+
+    /**
      * Constructor de la clase Framework
      * 
-     * @param {String} name Nombre del frameworks
+     * @param {Object} datos Nombre del frameworks
      * @param {String} fileName Archivo de configuración
-     * @param {Object} requirements Requisitos del frameworks
-     * @param {Object} schema Esquema de los formularios
-     * @param {Object} commands Comandos del framework
      */
-    constructor(name, fileName, requirements, schema, commands) {
-        /**
-         * Nombre del framework
-         */
-        this._name = name;
+    constructor(datos = null, fileName) {
+        if (datos != null) {
+            this._datos = datos;
 
-        /**
-         * Nombre del framework para uso especial (Se modificará, sin afectar a la estructura)
-         */
-        this._tempName = name;
+            this._name = datos.name;
 
-        /**
-         * Nombre para estructuras html
-         */
-        this._nameHTML = name.replace(/\s/g, '_');
+            this._tempName = datos.name;
 
-        /**
-         * Elemento padre
-         */
-        this._parent = $("#" + this._nameHTML);
+            this._nameHTML = datos.name.replace(/\s/g, '_');
 
-        /**
-         * Archivo de configuración
-         */
-        this._file = fileName;
+            this._parent = null;
 
-        /**
-         * Lista de requisitos
-         */
-        this._requirements = requirements;
+            this._file = fileName;
 
-        /**
-         * Guardamos la lista de requisitos para ser usado en otros modulos
-         */
-        this._requirementesData;
+            this._requirements = datos.requirements;
 
-        /**
-         * Schema del framework
-         * */
-        this._schema = schema != null ? JSON.parse(atob(schema)) : null;
+            this._schema = datos.forms != null ? JSON.parse(atob(datos.forms)) : null;
 
-        /**
-         * Lista de comandos
-         */
-        this._commands = commands;
+            this._quick = datos.quick != null ? JSON.parse(atob(datos.quick)) : null;
 
-        /**
-         * Estado bloqueado del botón de guardar
-         */
-        this._lockSave = false;
+            this._files = datos.files != null ? datos.files : null;
 
+            this._commands = datos.commands;
+
+            this._lockSave = false;
+        }
+        var min = datos == null;
         // Cargamos los modulos
-        this.loadModules();
+        this.loadModules(min);
     }
 
     /**
      * Cargamos los modulos necesarios y asignamos funciones
+     * @param {Boolean} min Carga los servicios mínimos
      */
-    loadModules() {
+    loadModules(min = false) {
         var self = this;
+        if (!min) {
+            this.ui();
 
-        this._requirementesData = this.requirementsTable('#requirements-' + this._nameHTML, this._requirements);
+            this._requirementesData = this.requirementsTable('#requirements-' + this._nameHTML, this._requirements);
 
-        this._parent.find("form").submit(function (event) {
-            event.preventDefault();
-        });
+            this._filesData = this.filesTable();
 
-        this._parent.find("button.save").click(function () {
-            interfaz.getFrameList(true, function (lista) {
-                self.checkErrors(true, lista);
-                self.saveFramework();
-            })
-        });
+            this._parent.find("form").submit(function (event) {
+                event.preventDefault();
+            });
 
-        $("#" + this._nameHTML + "-form-tab").click(function () {
-            self.createFormEditor();
-            // Limpiamos el evento, solo queremos que se ejecute 1 vez
-            $(this).off();
+            this._parent.find("button.save").click(function () {
+                interfaz.getFrameList(true, function (lista) {
+                    self.checkErrors(true, lista);
+                    self.saveFramework();
+                })
+            });
 
-            $(this).click(function () {
-                self.actualizarListaComandos();
-            })
-        });
+            $("#" + this._nameHTML + "-form-tab").click(function () {
+                self._editor = self.createFormEditor();
+                // Limpiamos el evento, solo queremos que se ejecute 1 vez
+                $(this).off().click(function () {
+                    self.actualizarListaComandos();
+                })
+            });
 
-        // Asignamos la opción de borrar el framework
-        this._parent.find("button.delete").click(function () {
-            interfaz.modal("Borrar framework", `¿Desea borrar ${self._name} y toda su configuración?<div class="alert alert-danger mt-2"><i class="fa fa-exclamation-triangle"></i> La administracción de proyectos con este framework quedará obsoleta.</div>`, "Borrar", function () {
-                self.deleteFramework();
-            })
-        });
+            $("#" + this._nameHTML + "-quick-tab").click(function () {
+                self._quickEditor = self.createFormEditor("#" + self._nameHTML + "-quick", self._quick, ['autocomplete', 'date', 'file', 'header', 'hidden', 'paragraph', 'radio-group', 'checkbox-group']);
+                // Limpiamos el evento, solo queremos que se ejecute 1 vez
+                $(this).off();
+
+                $(this).click(function () {
+                    self.actualizarListaComandos("#" + this._nameHTML + "-quick");
+                })
+            });
+
+            // Asignamos la opción de borrar el framework
+            this._parent.find("button.delete").click(function () {
+                interfaz.modal("Borrar framework", `¿Desea borrar ${self._name} y toda su configuración?<div class="alert alert-danger mt-2"><i class="fa fa-exclamation-triangle"></i> La administracción de proyectos con este framework quedará obsoleta.</div>`, "Borrar", function () {
+                    self.deleteFramework();
+                })
+            });
+
+            this.commandsTable();
+            interfaz.waitUntilElement("#" + this._nameHTML, function () {
+                interfaz.getFrameList(true, function (list) {
+                    self.checkErrors(false, list);
+                })
+            });
+
+        }
 
         //Asignamos la creación de un nuevo framework
-        $("#newFramework").off();
-        $("#newFramework").click(function () {
+        $("#newFramework").off().click(function () {
             self.createFramework();
         });
 
-        this.commandsTable();
-
-        interfaz.getFrameList(true, function (list) {
-            console.log(list);
-            self.checkErrors(false, list);
-        })
-
-        $("#files").off();
-        $("#files").on("change", function (e) {
+        // Cargamos el fichero de configuración
+        $("#files").off().on("change", function (e) {
             self.handleFileSelect(e);
         });
+
+    }
+
+    /**
+     * Crea elementos del DOM del framework
+     */
+    ui() {
+        // Nav
+        if ($("#list-frame").length == 0 || $("#nav-frame").length == 0)
+            $(".frame-body").html(`<div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="list-group" id="list-frame"></div>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <div class="tab-content" id="nav-frame"></div>
+                                        </div>
+                                    </div>`);
+
+        var active = $(".list-group a").length > 0 ? "" : " active";
+
+        $("#list-frame").append(`<a class="list-group-item list-group-item-action${active}\" id="list-${this._nameHTML}-list" data-toggle="list" href="#${this._nameHTML}" role="tab" aria-controls="${this._nameHTML}">${this._name}</a>`);
+
+        var install = this._datos.installCommand != undefined ? this._datos.installCommand : "";
+        var root = this._datos.mainRoot != undefined ? this._datos.mainRoot : "";
+
+        // Contenido
+        var contenido = this._nameHTML == null && this._nameHTML == undefined ? `<div class=\"alert alert-danger w-100 text-center\">Hay un error grave en la estructura del archivo ${this._file}</div>` : `<div class="tab-pane ${active}" id="${this._nameHTML}" role="tabpanel" aria-labelledby="list-${this._nameHTML}-list">
+        <div class="float-left">
+            <button class="btn btn-success save"><i class="fa fa-save"></i> Guardar</button>
+            <button class="btn btn-danger delete" data-toggle="modal" data-target="#modal"><i class="fa fa-trash"></i> Borrar</button>
+        </div>
+        <nav>
+            <div class="nav nav-tabs" id="editor-tabs" role="tablist">
+                <a class="nav-item nav-link ml-auto active" id="${this._nameHTML}-general-tab" data-toggle="tab" href="#${this._nameHTML}-general" role="tab" aria-selected="true">General</a>
+                <a class="nav-item nav-link" id="${this._nameHTML}-form-tab" data-toggle="tab" href="#${this._nameHTML}-form" role="tab" aria-selected="true">Formularios</a>
+                <a class="nav-item nav-link" id="${this._nameHTML}-commands-tab" data-toggle="tab" href="#${this._nameHTML}-commands" role="tab" aria-selected="true">Comandos</a>
+                <a class="nav-item nav-link" id="${this._nameHTML}-quick-tab" data-toggle="tab" href="#${this._nameHTML}-quick" role="tab" aria-selected="true">Acceso rápido</a>
+                <a class="nav-item nav-link" id="${this._nameHTML}-files-tab" data-toggle="tab" href="#${this._nameHTML}-files" role="tab" aria-selected="true">Archivos</a>
+            </div>
+        </nav>
+        <div class="tab-content p-2" id="nav-editor">
+            <div class="tab-pane fade show active" id="${this._nameHTML}-general" role="tabpanel">
+                <form id="form-${this._nameHTML}">
+                    <div class="form-group row">
+                        <label for="name-${this._nameHTML}" class="col-xl-4 col-form-label oglibatorio">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="name-${this._nameHTML}" class="form-control" value="${this._name}" required>
+                            <div class="invalid-feedback">
+                                ¡Debe escribir un nombre para el framework! Mínimo 5 carácteres
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="requirements-${this._nameHTML}" class="col-xl-4 col-form-label oglibatorio">Requisitos:</label>
+                        <div class="col-sm-10">
+                            <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="requirements-${this._nameHTML}" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Comando de versión</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="invalid-feedback" id="requirements-error">
+                                ¡Debe incluir al menos un requisito!
+                            </div>
+                            <div class="text-muted">Para comprobar si tenemos instaladas las dependencias, lo averiguaremos por el comando de versión.</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="main-root-${this._nameHTML}" class="col-xl-4 col-form-label">Ruta principal</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="main-root-${this._nameHTML}" class="form-control" value="${root}" placeholder="ej: public">
+                            <div class="invalid-feedback">¡Debes indicar la ruta principal!</div>
+                            <div class="text-muted">La ruta principal se usará para enlazar con la vista del proyecto</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="install-command-${this._nameHTML}" class="col-xl-4 col-form-label oglibatorio">Comando de instalación:</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="install-command-${this._nameHTML}" class="form-control" value="${install}" required>
+                            <div class="invalid-feedback">
+                                ¡Debes establecer un comando de instalación!
+                                <br>
+                                ¡Debe aparecer $name!
+                            </div>
+                            <div class="text-muted">Usa <strong>$name</strong> para obtener el nombre del proyecto</div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="tab-pane p-2 fade" id="${this._nameHTML}-form" role="tabpanel">
+                <div class="lds-spinner d-block mx-auto">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="tab-pane p-2 fade" id="${this._nameHTML}-commands" role="tabpanel">
+                <button class="btn btn-primary d-block mx-auto mb-3" data-toggle="collapse" data-target="#info"><i class="fa fa-question-circle"></i> Ayuda</button>
+                <div class="alert alert-primary collapse" id="info">
+                    Para editar/borrar pulse sobre el área de la fila que desea editar/borrar (La columna orden no sirve).<br>
+                    Puede editar/borrar múltiples filas haciendo clic en sus áreas y manteniendo la tecla <strong>CTRL</strong> pulsada.<br>
+                    Puede editar/borrar múltiples filas consecutivas haciendo clic en sus áreas y manteniendo la tecla <strong>Mayus</strong> pulsada.<br>
+                    Los comandos se ejecutan según el orden a la hora de crear un nuevo proyecto.<br>
+                    Para ordenar los comandos tienes que hacer click sobre el número del orden, y arrastrar.<br>
+                    Formas de obtener valores:
+                    <ul>
+                        <li>Valor de un input: %<nombre del input>, ej: %frontend</li>
+                        <li>Valor del input asociado: %this</li>
+                    </ul>
+                </div>
+                <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="comandos-${this._nameHTML}" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Nombre</th>
+                            <th>Comando</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tab-pane p-2 fade" id="${this._nameHTML}-quick" role="tabpanel">
+                <div class="lds-spinner d-block mx-auto">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="tab-pane p-2 fade" id="${this._nameHTML}-files" role="tabpanel">
+                <button class="btn btn-primary d-block mx-auto mb-3" data-toggle="collapse" data-target="#info-file"><i class="fa fa-info"></i> Información</button>
+                <div class="alert alert-primary collapse" id="info-file">
+                    Indique la ruta de los principales archivos de configuración.<br>
+                    O agrege los que más uses.
+                </div>
+                <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="files-${this._nameHTML}" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Ruta</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>`;
+
+        $("#nav-frame").append(contenido);
+
+        this._parent = $("#" + this._nameHTML);
     }
 
     /**
@@ -164,13 +380,13 @@ export class Frameworks {
         interfaz.alerta("exclamation-triangle", "Error", msg, "danger", false);
     }
 
+
     /**
      * Lee el archivo
      * 
      * @param {Event} evt Evento
      */
     handleFileSelect(evt) {
-        var self = this;
         var reader = new FileReader();
         reader.onerror = this.errorHandler;
         reader.onloadstart = function (e) {
@@ -184,34 +400,38 @@ export class Frameworks {
 
             if (ext == 'json') {
                 try {
-                    var contenido = JSON.parse(reader.result.replace(/(^"|"$)/g, "").replace(/\\"/g, "\"").replace(/\\+/g, "\\"));
+                    var contenido = JSON.parse(reader.result);
 
-                    interfaz.getFrameList(true, function (lista) {
+                    if (contenido.name != undefined && contenido.requirements.length > 0 && /(?=.*\$name)(?=.{6,}$)/.test(contenido.installCommand))
+                        interfaz.getFrameList(true, function (lista) {
 
-                        if (lista.includes(contenido.name)) {
-                            interfaz.alerta("exclamation-triangle", "Error", "Ya existe un framework con ese nombre", "danger", false);
-                        } else {
+                            if (lista != false && lista.includes(contenido.name)) {
+                                interfaz.alerta("exclamation-triangle", "Error", "Ya existe un framework con ese nombre", "danger", false);
+                            } else {
 
-                            interfaz.ajax("common", {
-                                api: "saveFile",
-                                nameFile: fileName,
-                                data: contenido
-                            }, "POST", "json", function (datos) {
-                                if (datos) {
-                                    interfaz.alerta("upload", "Configuración guardada", "Archivo guardado", "success");
-                                    setTimeout(function () {
-                                        sessionStorage.setItem("target", contenido.name);
-                                        location.reload();
-                                    }, 2000);
-                                } else {
+                                interfaz.ajax("common", {
+                                    api: "saveFile",
+                                    nameFile: fileName,
+                                    data: contenido
+                                }, "POST", "json", function (datos) {
+                                    if (datos) {
+                                        interfaz.alerta("upload", "Configuración guardada", "Archivo guardado", "success");
+
+                                        new Frameworks(contenido, fileName);
+                                        $("#list-frame a").last().click();
+
+                                    } else {
+                                        interfaz.alerta("exclamation-triangle", "Error", "Error al subir el archivo", "danger", false);
+                                    }
+
+                                }, function () {
                                     interfaz.alerta("exclamation-triangle", "Error", "Error al subir el archivo", "danger", false);
-                                }
-
-                            }, function () {
-                                interfaz.alerta("exclamation-triangle", "Error", "Error al subir el archivo", "danger", false);
-                            });
-                        }
-                    });
+                                });
+                            }
+                        });
+                    else {
+                        interfaz.alerta("exclamation-triangle", "Error", "El archivo no tiene un contenido válido", "danger", false);
+                    }
 
                 } catch (error) {
                     interfaz.alerta("exclamation-triangle", "Error", "Formato JSON inválido", "danger", false);
@@ -223,8 +443,7 @@ export class Frameworks {
             }
         }
 
-        // Read in the image file as a binary string.
-        reader.readAsBinaryString(evt.target.files[0]);
+        reader.readAsText(evt.target.files.item(0));
     }
 
     /**
@@ -235,6 +454,171 @@ export class Frameworks {
      */
     findElementConfig(name) {
         return this._parent.find("#" + name + "-" + this._nameHTML).val();
+    }
+
+    /**
+     * Crea la tabla de archivos
+     */
+    filesTable() {
+        var element = '#files-' + this._nameHTML;
+        // Configuración del editor
+        var editor = new $.fn.dataTable.Editor({
+            table: element,
+            fields: [{
+                label: 'Orden:',
+                name: 'readingOrder',
+                fieldInfo: 'Este campo solo puede ser editado arrastrando y soltando.',
+                "type": "readonly",
+                "def": function () {
+                    return filesTable.rows().data().length + 1;
+                }
+            }, {
+                "label": "Ruta:",
+                "name": "ruta",
+                attr: {
+                    autofocus: true
+                }
+            }]
+        });
+
+        // Instanciamos la tabla
+        var filesTable = $(element).DataTable({
+            data: this._files,
+            bFilter: false,
+            bPaginate: false,
+            bInfo: false,
+            columns: [{
+                data: 'readingOrder',
+                className: 'reorder'
+            }, {
+                "data": "ruta"
+            }],
+            select: true,
+            lengthChange: false,
+            rowReorder: {
+                dataSrc: 'readingOrder',
+                editor: editor
+            },
+            columnDefs: [{
+                orderable: false,
+                targets: [1]
+            }],
+            language: {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ rutas",
+                "sZeroRecords": "No se encontraron rutas",
+                "sEmptyTable": "No hay ninguna ruta expecificada",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ rutas)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Cargando...",
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                },
+                "buttons": {
+                    "copy": "Copiar",
+                    "colvis": "Visibilidad",
+                    "create": "Añadir",
+                    "edit": "Editar",
+                    "remove": "Borrar",
+                    "delete": "Borrar",
+                }
+            }
+        }).on('order', function () {
+            /*  Evitamos numeros no consecutivos en el orden cuando borramos una fila
+                es decir, si tenemos 1,2,3 comandos, borramos el comando 2,
+                evitamos tener en tabla 1,3 de orden
+            */
+            var index = 1;
+            filesTable.rows().every(function (rowIdx) {
+                filesTable.cell(rowIdx, 0).data(index++);
+            })
+        });
+
+        // Botones
+        new $.fn.dataTable.Buttons(filesTable, [{
+                extend: "create",
+                editor: editor
+            },
+            {
+                extend: "edit",
+                editor: editor
+            },
+            {
+                extend: "remove",
+                editor: editor
+            }
+        ]);
+
+        // Añadimos los botones
+        filesTable.buttons().container()
+            .appendTo($('.col-md-6:eq(0)', filesTable.table().container()));
+
+        editor.on('preSubmit', function (e, o, action) {
+            if (action !== 'remove') {
+
+                var ruta = this.field('ruta');
+                if (ruta.val() != undefined) {
+                    if (!ruta.val().trim().length > 0) {
+                        ruta.error('¡Debes introducir una ruta!');
+                        ruta.focus();
+                    }
+                    var repetido = false;
+
+                    for (let index = 0; index < filesTable.rows().data().length; index++) {
+                        var comando = filesTable.rows().data()[index];
+
+                        if (comando.ruta == ruta.val() && comando.DT_RowId != Object.keys(o.data)[0]) {
+                            repetido = true;
+                        }
+                    }
+
+                    if (repetido) {
+                        ruta.error('¡Ya existe esa ruta!');
+                        ruta.focus();
+                    }
+                }
+
+                // Si no hay un error, no mutesra nada
+                if (this.inError()) {
+                    return false;
+                }
+            }
+        }).on('open', function (e, o, action) {
+            var btn = $(".DTE_Footer .btn");
+            var title = $(".modal-title");
+            if (action !== 'remove') {
+                $(".DTE_Form_Content [autofocus]").focus();
+
+                if (action == 'edit') {
+                    btn.html("Editar");
+                    title.html("Editar");
+                } else {
+                    btn.html("Añadir");
+                    title.html("Indicar nueva ruta");
+                }
+            } else {
+                title.html("Borrar");
+                $(".DTE_Form_Info").html(`<div class="alert alert-danger text-center">¿Estás seguro que quieres borrar este archivo de la lista?</div>`);
+                btn.html("Borrar");
+            }
+        })
+
+        /**
+         * Extra los datos
+         */
+        function getData() {
+            var filesTableContent = [];
+            for (let index = 0; index < filesTable.rows().data().length; index++) {
+                filesTableContent.push(filesTable.rows().data()[index]);
+            }
+            return filesTableContent;
+        }
+
+        return getData;
     }
 
     /**
@@ -440,17 +824,6 @@ export class Frameworks {
             this._parent.find("#requirements-error").hide();
         }
 
-        var frameRoot = this._parent.find('#main-root-' + this._nameHTML);
-        if (!frameRoot.val().length > 0) {
-            errores++;
-            frameRoot.addClass("is-invalid");
-            $(`#main-root-${this._nameHTML} ~ .invalid-feedback`).show();
-        } else {
-            frameRoot.removeClass("is-invalid");
-            $(`#main-root-${this._nameHTML} ~ .invalid-feedback`).hide();
-
-        }
-
         var install = this._parent.find('#install-command-' + this._nameHTML);
         var patron = /(?=.*\$name)(?=.{6,}$)/;
         // 9 - composer | laravel new length
@@ -471,48 +844,63 @@ export class Frameworks {
 
         // Reiniciamos el estado de guardado
         this._lockSave = false;
-
         var self = this;
-        var formList = this._editor != null ? this._editor.actions.getData() : this._schema;
-        var noEncontrados = 0;
-        var elementosFormularioErrores = [];
         var listComands = this.listComands();
-        if (formList != null) {
-            var contador = 0;
-            formList.forEach(form => {
-                if (!listComands[form.shape]) {
-                    noEncontrados++;
-                    elementosFormularioErrores.push(contador);
-                }
-                contador++;
-            });
-        }
 
-        // Reseteanos las alertas
-        $(`#${this._nameHTML}-form-tab i`).remove();
-        $(`#${this._nameHTML}-forms .alert`).remove();
-        $('.commandNotFound').removeClass("commandNotFound");
+        /**
+         * Comprueba el editor de formularios
+         * @param {Variable} variable Variable donde coger los datos
+         * @param {JSON} schema Schema de datos
+         * @param {String} pill Elemento del DOM donde mostrar errores
+         */
+        function comprobarForms(variable, schema, pill) {
+            var noEncontrados = 0;
+            var elementosFormularioErrores = [];
 
-        if (noEncontrados > 0) {
-            errores++;
-            elementosFormularioErrores.forEach(element => {
-                var elemento = "ul.frmb li.form-field";
-                interfaz.waitUntilElement(elemento, function () {
-                    $(elemento).eq(element).addClass("commandNotFound");
+
+            var formList = variable != null ? variable.actions.getData() : schema;
+            if (formList != null) {
+                var contador = 0;
+                formList.forEach(form => {
+                    if (!listComands[form.cmd]) {
+                        noEncontrados++;
+                        elementosFormularioErrores.push(contador);
+                    }
+                    contador++;
                 });
-            });
+            }
 
-            mensaje += "¡Debe solucionar los errores marcados en la página!";
+            // Reseteanos las alertas
+            $(`#${self._nameHTML}-${pill}-tab i`).remove();
+            $(`#${self._nameHTML}-${pill} .alert`).remove();
+            $(`#${self._nameHTML}-${pill} .commandNotFound`).removeClass("commandNotFound");
 
-            var ese = noEncontrados == 1 ? "" : "s";
+            if (noEncontrados > 0) {
+                errores++;
+                var elemento = `#${self._nameHTML}-${pill} ul.frmb li.form-field`;
+                elementosFormularioErrores.forEach(element => {
+                    interfaz.waitUntilElement(elemento, function () {
+                        $(elemento).eq(element).addClass("commandNotFound");
+                    });
+                });
 
-            $(`#${this._nameHTML}-form-tab`).append(` <i class="fa fa-exclamation-triangle text-danger"></i>`);
+                mensaje += "¡Debe solucionar los errores marcados en la página!";
 
-            $(`#${this._nameHTML}-forms`).prepend(`<div class="alert alert-danger text-center">
+                var ese = noEncontrados == 1 ? "" : "s";
+
+                $(`#${self._nameHTML}-${pill}-tab`).append(` <i class="fa fa-exclamation-triangle text-danger"></i>`);
+
+                $(`#${self._nameHTML}-${pill}`).prepend(`<div class="alert alert-danger text-center">
                         <i class="fa fa-exclamation-triangle"></i> ¡Hay ${noEncontrados} elemento${ese} del formulario con comandos no existentes o que recientemente has borrado!
                     </div>`);
 
+            }
         }
+
+        comprobarForms(this._editor, this._schema, "form");
+
+        comprobarForms(this._quickEditor, this._quick, "quick");
+
 
         $(`#list-${this._nameHTML}-list i`).remove();
         if (errores > 0) {
@@ -726,15 +1114,14 @@ export class Frameworks {
                 $("#" + self._nameHTML).remove();
 
                 // Cambiamos al primero de la lista de frameworks
-                if ($("#list-tab a").length > 0)
-                    $("#list-tab a").eq(0).click();
+                if ($("#list-frame a").length > 0)
+                    $("#list-frame a").eq(0).click();
                 else
-                    $(".card-body").html(`<div class="alert alert-info text-center w-100">No hay ninguna configuración de framework creada.</div>`);
+                    $(".frame-body").html(`<div class="alert alert-info text-center w-100">No hay ninguna configuración de framework creada.</div>`);
 
             } else
                 interfaz.alerta("exclamation-triangle", "Errors", "Se ha producido un error al borrar", "danger");
         }, function (data) {
-            console.log("Error:" + data);
             interfaz.alerta("exclamation-triangle", "Error", "Se ha producido un error al borrar", "danger");
         });
     }
@@ -755,6 +1142,9 @@ export class Frameworks {
             // Guardamos requisitos
             jsonschema.requirements = self._requirementesData();
 
+            // Guardamos los archivos
+            jsonschema.files = self._filesData();
+
             // Guardamos la ruta principal
             jsonschema.mainRoot = self.findElementConfig("main-root");
 
@@ -770,6 +1160,13 @@ export class Frameworks {
                 jsonschema.forms = btoa(JSON.stringify(jsonschema.forms));
             else
                 delete jsonschema.forms;
+
+            jsonschema.quick = self._quickEditor != null ? self._quickEditor.actions.getData() : self._quick;
+
+            if (jsonschema.quick != null && jsonschema.quick.length > 0)
+                jsonschema.quick = btoa(JSON.stringify(jsonschema.quick));
+            else
+                delete jsonschema.quick;
 
             // Guardamos los comandos
             jsonschema.commands = [];
@@ -816,7 +1213,7 @@ export class Frameworks {
         var forms = `
         <form id="${id}">
             <div class="form-group row">
-                <label for="frameName" class="col-xl-2 col-form-label">Nombre: </label>
+                <label for="frameName" class="col-xl-4 col-form-label oglibatorio">Nombre:</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="frameName" required autofocus>
                     <div class="invalid-feedback">
@@ -825,7 +1222,7 @@ export class Frameworks {
                 </div>
             </div>
             <div class="form-group row">
-                <label for="frameReq" class="col-xl-2 col-form-label">Requisitos: </label>
+                <label for="frameReq" class="col-xl-4 col-form-label oglibatorio">Requisitos:</label>
                 <div class="col-sm-10">
                     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="frameReq" width="100%">
                         <thead>
@@ -850,7 +1247,7 @@ export class Frameworks {
                 </div>
             </div>
             <div class="form-group row">
-                <label for="commandInstall" class="col-sm-6 col-form-label">Comando de instalación:</label>
+                <label for="commandInstall" class="col-sm-6 col-form-label oglibatorio">Comando de instalación:</label>
                 <div class="col-sm-10">
                     <input type="text" id="commandInstall" class="form-control" required>
                     <div class="invalid-feedback">
@@ -872,7 +1269,7 @@ export class Frameworks {
         interfaz.waitUntilElement(`#${id} #frameReq`, function () {
             requisitos = self.requirementsTable("#frameReq");
         }, function () {
-            console.error("¡Ha ocurrido un error al crear la tabla! Error: #newTable01");
+            interfaz.alerta("exclamation-triangle", "Error", "¡Ha ocurrido un error al crear la tabla! Error: #newTable01", "danger", false);
         });
 
         interfaz.modal("Crear nueva configuración de framework", forms, "Crear", function () {
@@ -897,7 +1294,8 @@ export class Frameworks {
                 var patron = /^[0-9a-zA-Z_-áéíóúÁÉÍÓÚñÑçÇ\s]{5,}$/;
 
                 // Comprobamos si existe un framework con el nuevo nombre
-                frameworkYaexiste = lista.includes(nombre.val());
+                if (lista != false)
+                    frameworkYaexiste = lista.includes(nombre.val());
 
                 if (patron.test(nombre.val()))
                     mensajeNombre = "¡Ya existe un framework con ese nombre!";
@@ -932,17 +1330,6 @@ export class Frameworks {
                     $(`#commandInstall ~ .invalid-feedback`).hide();
                 }
 
-                var frameRoot = $("#frameRoot");
-                if (!frameRoot.val().length > 0) {
-                    errores++;
-                    frameRoot.addClass("is-invalid");
-                    $(`#frameRoot ~ .invalid-feedback`).show();
-                } else {
-                    frameRoot.removeClass("is-invalid");
-                    $(`#frameRoot ~ .invalid-feedback`).hide();
-
-                }
-
                 // Si los datos son correctos, guardamos
                 if (errores == 0) {
                     /**
@@ -975,15 +1362,11 @@ export class Frameworks {
                         if (data == 1) {
                             interfaz.alerta("plus", "Nueva configuración", "Configuración creada", "success");
 
-                            // Refrescamos la página tras 1 segundo
-                            setTimeout(function () {
-                                sessionStorage.setItem("target", jsonschema.name);
-                                location.reload();
-                            }, 1000);
+                            new Frameworks(datos.data, datos.nameFile);
+                            $("#list-frame a").last().click();
                         } else
                             interfaz.alerta("exclamation-triangle", "Errors", "Se ha producido un error al crear", "danger");
                     }, function (data) {
-                        console.log("Error:" + data);
                         interfaz.alerta("exclamation-triangle", "Error", "Se ha producido un error al crear", "danger");
                     });
 
@@ -993,13 +1376,6 @@ export class Frameworks {
             }
 
         }, null, false, false);
-    }
-
-    /**
-     * Carga un archivo de configuración
-     */
-    loadConfigFile() {
-
     }
 
     /**
@@ -1025,194 +1401,219 @@ export class Frameworks {
 
     /**
      * Actualiza la lista de comandos del editor de formularios
+     * @param {String} tab Pestaña de configuración
      */
-    actualizarListaComandos() {
+    actualizarListaComandos(tab = "#" + this._nameHTML + "-form") {
         // Actualizamos la lista de comandos
         var self = this;
-        var padre = $("li.form-field.editing");
 
-        var selector = padre.find("select[title='Comando']");
-        if (selector.length > 0) {
-            var dValue = {
-                nombre: "Seleccione un comando",
-                valor: ""
-            };
-            var valor = selector.val();
+        $(`${tab} li.form-field.editing select[title='Comando']`).toArray().forEach(selector => {
+            var id = selector.id;
+            selector = $(selector);
 
-            selector.css("border", "");
+            if (selector.length > 0) {
+                var dValue = {
+                    nombre: "Seleccione un comando",
+                    valor: ""
+                };
+                let valor = selector.val();
 
-            // Borramos el contenido
-            selector.empty();
-            // Añadimos las opciones
-            var comandos = this.listComands(dValue);
-            Object.keys(comandos).forEach(opcion => {
-                selector.append(`<option value='${opcion}' >${comandos[opcion]}</option>`);
-            });
+                selector.css("border", "");
 
-            /**
-             * Función local que cambia el color si está seleccinada la opción por defecto
-             */
-            function changeColor() {
-                // Borramos eventos anteriores para evitar la acumulación de eventos
-                selector.off();
+                // Borramos el contenido
+                selector.empty();
+                // Añadimos las opciones
+                var comandos = this.listComands(dValue);
+                Object.keys(comandos).forEach(opcion => {
+                    selector.append(`<option value='${opcion}' >${comandos[opcion]}</option>`);
+                });
 
-                // Ejecutamos al instante para mostrar el borde rojo
-                if (selector.val() != dValue.valor)
-                    selector.css("border", "");
-                else
-                    selector.css("border", "red solid 1px");
+                /**
+                 * Función local que cambia el color si está seleccinada la opción por defecto
+                 */
+                function changeColor() {
+                    // Borramos eventos anteriores para evitar la acumulación de eventos
+                    selector.off();
 
-                self.checkErrors();
-
-
-                selector.bind("change keyup", function () {
+                    // Ejecutamos al instante para mostrar el borde rojo
                     if (selector.val() != dValue.valor)
                         selector.css("border", "");
                     else
                         selector.css("border", "red solid 1px");
+
                     self.checkErrors();
-                });
+
+
+                    selector.bind("change keyup", function () {
+                        if (selector.val() != dValue.valor)
+                            selector.css("border", "");
+                        else
+                            selector.css("border", "red solid 1px");
+                        self.checkErrors();
+                    });
+                }
+
+                // Seleccionamos la opción que estaba seleccionada antes de borrar todo
+                var changeSelect = $(`#${id} > option[value="${valor}"]`);
+                if (changeSelect.length > 0) {
+                    changeSelect.attr("selected", true);
+                    changeColor();
+                } else {
+                    selector.val(dValue.valor);
+                    changeColor();
+                }
             }
 
-            // Seleccionamos la opción que estaba seleccionada antes de borrar todo
-            var changeSelect = padre.find(`select[title='Comando'] > option[value="${valor}"]`);
-            if (changeSelect.length > 0) {
-                changeSelect.attr("selected", true);
-                changeColor();
-            } else {
-                selector.val(dValue.valor);
-                changeColor();
-            }
-        }
+        });
     }
 
     /**
      * Crea el editor de formularios
+     * @param {String} element Elemento que debe detectar para cargar
+     * @param {JSON} data Datos del formulario
+     * @param {Array} disable Elementos desabilitados
      */
-    createFormEditor() {
-        if (this._editor == null) {
+    createFormEditor(element = "#" + this._nameHTML + "-form", data = this._schema, disable = ['autocomplete', 'date', 'file', 'header', 'hidden', 'paragraph', 'button']) {
+        var variable = null;
+        var dValue = {
+            nombre: "Seleccione un comando",
+            valor: ""
+        };
 
-            var opciones = {}
-            var dValue = {
-                nombre: "Seleccione un comando",
-                valor: ""
-            };
-
-            // Atributos customizados donde almacenamos los comandos
-            var sameCustomAttrs = {
-                shape: {
-                    label: 'Comando',
-                    multiple: false,
-                    options: this.listComands(dValue),
-                    required: true
-                }
+        // Atributos customizados donde almacenamos los comandos
+        var sameCustomAttrs = {
+            cmd: {
+                label: 'Comando',
+                multiple: false,
+                options: this.listComands(dValue),
+                required: true
             }
-
-            var self = this;
-
-
-            var options = {
-                defaultFields: this._schema,
-                fieldRemoveWarn: true,
-                editOnAdd: true,
-                disabledActionButtons: ['data', 'save', 'clear'],
-                stickyControls: {
-                    enable: true
-                },
-                scrollToFieldOnAdd: false,
-                disableFields: ['autocomplete', 'date', 'file', 'header', 'hidden', 'paragraph', 'button'],
-                typeUserAttrs: {
-                    'checkbox-group': sameCustomAttrs,
-                    number: sameCustomAttrs,
-                    'radio-group': sameCustomAttrs,
-                    select: sameCustomAttrs,
-                    text: sameCustomAttrs,
-                    textarea: sameCustomAttrs
-                },
-                typeUserDisabledAttrs: {
-                    'checkbox-group': ['access', 'other'],
-                    number: ['access'],
-                    'radio-group': ['access', 'other'],
-                    select: ['access'],
-                    text: ['access'],
-                    textarea: ['access']
-                },
-                onOpenFieldEdit: function () {
-                    self.actualizarListaComandos();
-                },
-                onAddField: function (fieldID) {
-                    // Cuando creamos un nuevo field y lo eliminamos, actualizamos los errores
-
-                    //Pequeño arreglo con el ID
-                    var fieldID = fieldID.split("fld-");
-                    var boton = `#${fieldID[0]}fld-${(Number.parseInt(fieldID[1])+1)} .field-actions a.del-button`;
-                    interfaz.waitUntilElement(boton, function () {
-                        $(boton).off();
-                        $(boton).click(function () {
-                            var confirmar = ".button-wrap .yes";
-                            interfaz.waitUntilElement(confirmar, function () {
-                                $(confirmar).off();
-                                $(confirmar).click(function () {
-                                    /**
-                                     * Ejecutamos el chequeo cuando se oculte el modal
-                                     */
-                                    function checkError() {
-                                        setTimeout(function () {
-                                            if ($(confirmar).length > 0)
-                                                checkError();
-                                            else
-                                                self.checkErrors()
-                                        }, 300);
-                                    }
-
-                                    checkError();
-
-                                });
-                            });
-
-                        });
-                    });
-                }
-            };
-            this._editor = this._parent.find(".json-editor-form").formBuilder(options);
-            this._parent.find(".lds-spinner").remove();
-
-            // Limpiamos los residuos de consola del generador
-            interfaz.waitUntilElement(".form-builder", function () {
-                console.clear();
-            });
         }
+
+        var patternAttr = {
+            pattern: {
+                label: "Pattern",
+                placeholder: "Introduce una expresión regular a buscar",
+                value: ""
+            },
+            patternInfo: {
+                label: "Pattern-info",
+                placeholder: "Introduce información sobre el patrón",
+                value: ""
+            }
+        }
+
+        patternAttr.cmd = sameCustomAttrs.cmd;
+
+        var self = this;
+
+
+        var options = {
+            defaultFields: data,
+            fieldRemoveWarn: true,
+            editOnAdd: true,
+            disabledActionButtons: ['data', 'save', 'clear'],
+            stickyControls: {
+                enable: true
+            },
+            scrollToFieldOnAdd: false,
+            disableFields: disable,
+            typeUserAttrs: {
+                'checkbox-group': sameCustomAttrs,
+                number: sameCustomAttrs,
+                'radio-group': sameCustomAttrs,
+                select: sameCustomAttrs,
+                text: patternAttr,
+                textarea: patternAttr,
+                button: sameCustomAttrs
+            },
+            typeUserDisabledAttrs: {
+                'checkbox-group': ['access', 'other'],
+                number: ['access'],
+                'radio-group': ['access', 'other'],
+                select: ['access'],
+                text: ['access'],
+                textarea: ['access'],
+                button: ['access']
+            },
+            onOpenFieldEdit: function () {
+                self.actualizarListaComandos(element);
+            },
+            onAddField: function (fieldID) {
+                // Cuando creamos un nuevo field y lo eliminamos, actualizamos los errores
+
+                //Pequeño arreglo con el ID
+                var fieldID = fieldID.split("fld-");
+                var boton = `#${fieldID[0]}fld-${(Number.parseInt(fieldID[1])+1)} .field-actions a.del-button`;
+                interfaz.waitUntilElement(boton, function () {
+                    $(boton).off().click(function () {
+                        var confirmar = ".button-wrap .yes";
+                        interfaz.waitUntilElement(confirmar, function () {
+                            $(confirmar).off().click(function () {
+                                /**
+                                 * Ejecutamos el chequeo cuando se oculte el modal
+                                 */
+                                function checkError() {
+                                    setTimeout(function () {
+                                        if ($(confirmar).length > 0)
+                                            checkError();
+                                        else
+                                            self.checkErrors()
+                                    }, 300);
+                                }
+
+                                checkError();
+
+                            });
+                        });
+
+                    });
+                });
+            }
+        };
+        variable = this._parent.find(element).formBuilder(options);
+        this._parent.find(".lds-spinner").remove();
+
+        // Limpiamos los residuos de consola del generador
+        interfaz.waitUntilElement(`${element} .form-builder`, function () {
+            console.clear();
+        });
+        return variable;
     }
 }
 
-/**
- * Lista de configuración de frameworks
- */
-var listFrameworks = [];
+// Se ejecutará en la página de configuración
+if ($("#newFramework").length > 0) {
 
-// Cargamos todos los frameworks
-$(".json-editor-form").each(function () {
-    var self = this;
-    var json = $(this).data("json");
+    interfaz.ajax("common", {
+        api: "frameworks"
+    }, "POST", "json", function (data) {
+        if (data != "") {
 
-    interfaz.ajax("assets/includes/vistas/config/frameworks/" + json, null, null, undefined, function (datos) {
-        listFrameworks.push(new Frameworks(datos.name, json, datos.requirements, datos.forms, datos.commands));
+            $(".frame-body").html(`<div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="list-group" id="list-frame"></div>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <div class="tab-content" id="nav-frame"></div>
+                                        </div>
+                                    </div>`);
+
+            Object.keys(data).forEach(datos => {
+                var file = data[datos].file;
+                datos = data[datos].data;
+                new Frameworks(datos, file);
+            });
+        } else {
+            new Frameworks;
+            $(".frame-body").html(`<div class="alert alert-primary w-100 text-center mx-2">
+            No hay frameworks configurados.
+            </div>`);
+        }
     }, function () {
-        $(self).html(`<div class="alert alert-danger w-100 text-center mx-2">
-        Se ha producido un error al obtener los resultados.<br>
-        <span class="text-muted">Error: #loadSchema_01</span>
-        </div>`);
-    });
-});
-
-// Hacemos target al elemento recientemente creado
-var target = sessionStorage.getItem("target");
-
-if (target != null) {
-    interfaz.waitUntilElement(`#list-${target}-list`, function () {
-        $(`#list-${target}-list`).click();
-
-        // Destruimos los datos
-        sessionStorage.removeItem("target");
+        $(".frame-body").html(`<div class="alert alert-danger w-100 text-center mx-2">
+            Se ha producido un error al obtener los resultados.<br>
+            <span class="text-muted">Error: #loadSchema_01</span>
+            </div>`);
     });
 }

@@ -38,23 +38,6 @@ export class Interface {
             self.modal("Permitir notificaciones", "Permite a este sitio que te envíe notificaciones cuando no estés en la web", "Aceptar", null, null, true);
         });
 
-        if ($(".descarga").length > 0) {
-            $(".descarga").click(function (e) {
-                var btn = $(this);
-                if (btn.hasClass("stop")) {
-                    e.preventDefault();
-                    console.log("Evitado");
-                } else {
-                    setTimeout(function () {
-                        btn.removeClass("stop").html(`<i class="fa fa-download"></i> Descargar`);
-                    }, 1000);
-                }
-
-
-                btn.addClass("stop").html(`Creando archivo <i class="fa fa-spinner fa-spin"></i>`);
-            });
-        }
-
         if ($("#projectlist").length > 0) {
             this.listProject();
             this.listaFrameworksIntermediate();
@@ -66,74 +49,50 @@ export class Interface {
             });
         }
 
-        if ($(".delProject").length > 0) {
-            $(".delProject").click(function () {
-                var project = $(this).data("project");
-                self.modal("¿Desea borrar el proyecto?", "Perderás todo el contenido y no se podrá recuperar", "Borrar", function () {
-                    self.modal("Borrando...", 'Borrando proyecto <i class="fa fa-spinner fa-spin">');
-                    self.ajax("common", {
-                        api: "delProject",
-                        name: project
-                    }, "POST", "json", function (data) {
-                        if (data) {
-                            $("#modal").modal("toggle");
-                            self.alerta("trash", "Borrado", "Proyecto borrado", "success");
-                            setTimeout(function () {
-                                window.location = self.fixRoot(".");
-                            }, 2000);
-                        } else {
-                            self.alerta("exclamation-triangle", "Error", "Error al borrar el proyecto", "danger");
-                        }
-                    }, function () {
-                        self.alerta("exclamation-triangle", "Error", "Error al borrar el proyecto", "danger");
-                    });
-                }, null, false, false);
-            });
-        }
-
         $(".newProject").click(function () {
             self.getFrameList(true, function (list) {
-                var select = '<select class="form-control" id="frameSelected"><option value="">Seleccione un framework</option>';
-                list.forEach(op => {
-                    select += `<option>${op}</option>`
-                });
+                if (list.length > 0) {
+                    var select = '<select class="form-control" id="frameSelected"><option value="">Seleccione un framework</option>';
+                    list.forEach(op => {
+                        select += `<option>${op}</option>`
+                    });
 
-                self.modal("Nuevo proyecto", `<label class="form-label row p-4">Seleccione un framework: ${select}</select></label><div class="invalid-feedback">¡Debes selecionar un framework!</div>`, "Siguiente", function () {
-                    var parent = $(".modal-content");
-                    var selected = $("#frameSelected").val();
-                    parent.find(".invalid-feedback").hide();
-                    if (selected != "") {
+                    self.modal("Nuevo proyecto", `<label class="form-label row p-4">Seleccione un framework: ${select}</select></label><div class="invalid-feedback">¡Debes selecionar un framework!</div>`, "Siguiente", function () {
+                        var parent = $(".modal-content");
+                        var selected = $("#frameSelected").val();
+                        parent.find(".invalid-feedback").hide();
+                        if (selected != "") {
 
-                        self.modal("Requisitos del framework", `<div class="text-center">Comprobando requisitos <i class="fa fa-spinner fa-spin"></i></div>`);
+                            self.modal("Requisitos del framework", `<div class="text-center">Comprobando requisitos <i class="fa fa-spinner fa-spin"></i></div>`);
 
-                        self.ajax("assets/includes/class/runCode.php", {
-                            requirements: selected
-                        }, "post", "json", function (datos) {
-                            if (datos === true && $(".modal.show").length > 0) {
-                                self.modal(`Nuevo proyecto - ${selected}`, "", `Crear`, function () {
-                                    /**
-                                     * Lista negra de nombre de carpetas en linux y windows
-                                     * 
-                                     * Primera parte - Comprueba que el nombre no sea así
-                                     * Segunda parte - Comprueba que no exista esos caracteres en el nombre
-                                     * Tercera parte - Comprueba que no termina en punto o espacio
-                                     */
-                                    var blackList = /^(?!(CON|VENDOR|PRN|AUX|CLOCK|NUL|[A-Z]\:|COM[1-9]|LPT[1-9])$)(?!.*[\<\>\:\"\/\\\|\?\*])(?!^.*[\.\s]+$)/gi;
-                                    var nombre = $("#name-project");
-                                    if (nombre.val().length > 0)
-                                        self.ajax("common", {
-                                            "api": "listProjects"
-                                        }, "post", "json", function (datos) {
-                                            datos = datos.map(function (x) {
-                                                return x.toUpperCase()
-                                            });
-                                            nombre = $("#name-project");
+                            self.ajax("assets/includes/class/runCode.php", {
+                                requirements: selected
+                            }, "post", "json", function (datos) {
+                                if (datos === true && $(".modal.show").length > 0) {
+                                    self.modal(`Nuevo proyecto - ${selected}`, "", `Crear`, function () {
+                                        /**
+                                         * Lista negra de nombre de carpetas en linux y windows
+                                         * 
+                                         * Primera parte - Comprueba que el nombre no sea así
+                                         * Segunda parte - Comprueba que no exista esos caracteres en el nombre
+                                         * Tercera parte - Comprueba que no termina en punto o espacio
+                                         */
+                                        var blackList = /^(?!(CON|VENDOR|PRN|AUX|CLOCK|NUL|[A-Z]\:|COM[1-9]|LPT[1-9])$)(?!.*[\<\>\:\"\/\\\|\?\*])(?!^.*[\.\s]+$)/gi;
+                                        var nombre = $("#name-project");
+                                        if (nombre.val().length > 0)
+                                            self.ajax("common", {
+                                                "api": "listProjects"
+                                            }, "post", "json", function (datos) {
+                                                datos = datos.map(function (x) {
+                                                    return x.toUpperCase()
+                                                });
+                                                nombre = $("#name-project");
 
-                                            if (datos.includes(nombre.val().toUpperCase())) {
-                                                $("#invalid-project-name").html("¡Ya existe un proyecto con ese nombre!").show();
-                                                nombre.focus();
-                                            } else if (!blackList.test(nombre.val())) {
-                                                $("#invalid-project-name").html(`¡Nombre inválido!
+                                                if (datos.includes(nombre.val().toUpperCase())) {
+                                                    $("#invalid-project-name").html("¡Ya existe un proyecto con ese nombre!").show();
+                                                    nombre.focus();
+                                                } else if (!blackList.test(nombre.val())) {
+                                                    $("#invalid-project-name").html(`¡Nombre inválido!
                                                 <br>Nombres no permitidos:
                                                 <ul>
                                                     <li>con</li>
@@ -148,73 +107,75 @@ export class Interface {
                                                 </ul>
                                                 No se permite nombres con los siguientes caracteres: <, >, :, ", \\, \/, \|, ?, *<br>
                                                 No puede acabar en punto o espacio`).show();
-                                                nombre.focus();
-                                            } else {
-                                                var modal = $(".modal-dialog");
+                                                    nombre.focus();
+                                                } else {
+                                                    var modal = $(".modal-dialog");
 
-                                                // Posición de la notificación
-                                                var position = $(".notify").offset();
+                                                    // Posición de la notificación
+                                                    var position = $(".notify").offset();
 
-                                                modal.animate({
-                                                    width: 0 + 'px',
-                                                    height: 0 + 'px',
-                                                    left: Math.abs(position.left - modal.offset().left - (modal.width() / 2)) + 'px',
-                                                    top: position.top + 'px'
-                                                }, 300, "linear", function () {
-                                                    $("#modal").modal("hide");
+                                                    modal.animate({
+                                                        width: 0 + 'px',
+                                                        height: 0 + 'px',
+                                                        left: Math.abs(position.left - modal.offset().left - (modal.width() / 2)) + 'px',
+                                                        top: position.top + 'px'
+                                                    }, 300, "linear", function () {
+                                                        $("#modal").modal("hide");
 
-                                                    // Devolvemos el modal a su estado original
-                                                    setTimeout(function () {
-                                                        modal.removeAttr("style");
-                                                    }, 500);
-                                                });
+                                                        // Devolvemos el modal a su estado original
+                                                        setTimeout(function () {
+                                                            modal.removeAttr("style");
+                                                        }, 500);
+                                                    });
 
-                                                self._comands();
-                                            }
-                                        }, function () {
-                                            console.error("Error al comprobar si existe un proyecto con ese nombre");
-                                        });
-                                    else {
-                                        $("#invalid-project-name").show();
-                                        nombre.focus();
-                                    }
-                                }, null, false, false);
+                                                    self._comands();
+                                                }
+                                            }, function () {
+                                                interfaz.alerta("exclamation-triangle", "Error", "Error al comprobar si existe un proyecto con ese nombre", "danger", false);
+                                            });
+                                        else {
+                                            $("#invalid-project-name").show();
+                                            nombre.focus();
+                                        }
+                                    }, null, false, false);
 
-                                self.ajax(`assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
-                                    if (datos.forms && datos.commands) {
+                                    self.ajax(`assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
+
                                         self.waitUntilElement(".modal-body", function () {
                                             self._comands = self.doCommands(datos, self.ucFirst(selected));
-                                            self.setFixedRender(".modal-body", datos);
-                                            $(".modal-body").prepend('<label class="form-label row px-4">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Instroduce un nombre</div></label>');
+                                            if (datos.forms && datos.commands)
+                                                self.setFixedRender(".modal-body", datos.forms);
+                                            $(".modal-body").prepend('<label class="form-label row px-4 oglibatorio">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Introduce un nombre</div></label>');
                                             $("#modal").find("[autofocus]").focus();
                                         }, function () {
-                                            console.error("#Error formRender_01");
+                                            interfaz.alerta("exclamation-triangle", "Error", "#Error formRender_01", "danger", false);
                                         });
-                                    } else {
-                                        $(".modal-body").html('<div class="alert alert-danger text-center"><i class="fa fa-exclamation-triangle"></i> Error: <strong>No se ha encontrado formulario para este framework.</strong></div>');
-                                    }
-                                }, function () {
-                                    console.error("Ha ocurrido un error al obtener los datos del framework");
-                                });
-                            } else {
-                                $(".modal-body").html(`<div class="alert alert-danger">Para que este framework funcione se require lo siguiente:
+                                    }, function () {
+                                        interfaz.alerta("exclamation-triangle", "Error", "Ha ocurrido un error al obtener los datos del framework", "danger", false);
+
+                                    });
+                                } else {
+                                    $(".modal-body").html(`<div class="alert alert-danger">Para que este framework funcione se require lo siguiente:
                                 <ul>${datos}</ul></div>`);
-                            }
-                        }, function (datos) {
-                            console.log(datos);
-                            console.error("Error al comprobar los requisitos");
-                        });
+                                }
+                            }, function (datos) {
+                                interfaz.alerta("exclamation-triangle", "Error", "Error al comprobar los requisitos", "danger", false);
+                            });
 
-                    } else
-                        parent.find(".invalid-feedback").show();
+                        } else
+                            parent.find(".invalid-feedback").show();
 
-                }, null, false, false);
+                    }, null, false, false);
+                } else {
+                    var link = self.fixRoot("config");
+                    self.modal("No se han encontrado frameworks", `<div class="alert alert-primary text-center"><i class="fa fa-info"></i> No se ha encontrado frameworks. <a href="${link}">¿Desea añadir uno?</a></div>`, "Aceptar", null, null, true);
+                }
             });
         });
 
         this._notify = setInterval(function () {
             self.actualizarNotificaciones();
-        }, 600);
+        }, 1000);
 
         $(".cancelAll").click(function () {
 
@@ -260,11 +221,11 @@ export class Interface {
                             porcentaje = 95;
                         $(".notify-content").append(`<div id="install-${instalacion}">
                         <div class="row m-0 position-relative">
-                            <div class="col-sm-12 h5">${instalacion}</div>
+                            <div class="col-sm-12 h5">${instalacion}<br><span class="frame-info badge badge-warning"><i class="fa fa-puzzle-piece"></i> ${datos[instalacion].frame}</span></div>
                             <div class="col-sm-3">${datos[instalacion].progress}</div>
                             <div class="col-sm-9">${datos[instalacion].name}</div>
-                            <progress class="position-absolute w-100 h-100" value="${porcentaje}" max="100">
-                            </progress>
+                            <div class="position-absolute h-100 progress-bar" style="width: ${porcentaje}%;">
+                            </div>
                             <button class="btn btn-danger btn-sm position-absolute cancelInstall" data-install="${instalacion}" ><i class="fa fa-times"></i></button>
                         </div>
                     </div>`);
@@ -275,8 +236,8 @@ export class Interface {
                             var errorMSG = `Error grave al cancelar la instalación.<br>Sigue estos pasos para evitar futuros errores:
                                 <ul>
                                     <li>Compruebe que el proceso <strong>Php.exe</strong> no está activo</li>
-                                    <li>Revise que el archivo "assets/includes/installing/${name}_status.json" ha sido eliminado, en caso contrario, <strong>elimínelo</strong>.</li>
-                                    <li>Revise que se ha eliminado la carpeta "projects/${name}", en caso contrario, <strong>elimínelo</strong>.</li>
+                                    <li>Revise que el archivo "assets/includes/installing/${datos[instalacion].name}_status.json" ha sido eliminado, en caso contrario, <strong>elimínelo</strong>.</li>
+                                    <li>Revise que se ha eliminado la carpeta "projects/${datos[instalacion].name}", en caso contrario, <strong>elimínelo</strong>.</li>
                                 </ul>`;
                             // Enviamos el proceso de cancelación
                             self.ajax("common", {
@@ -304,13 +265,13 @@ export class Interface {
                         var parent = $(`#install-${instalacion}`);
                         parent.find(".col-sm-3").html(datos[instalacion].progress);
                         parent.find(".col-sm-9").html(datos[instalacion].name);
-                        parent.find("progress").val(porcentaje);
+                        parent.find(".progress-bar").css("width", porcentaje + "%");
                     } else if (datos[instalacion].cancel) {
                         // Si cancelamos la instalación
                         var parent = $(`#install-${instalacion}`);
                         parent.find(".col-sm-9").html("Cancelando...");
                         parent.find(".col-sm-3").html();
-                        parent.find("progress").val(100);
+                        parent.find(".progress-bar").css("width", "100%");
                         self._temporal[instalacion].cancel = true;
                     }
                     count++;
@@ -345,14 +306,24 @@ export class Interface {
     }
 
     /**
+     * Extrae parte de la cedena
+     * 
+     * @param {String} cadena Cadena de caracteres
+     * @param {RegExp} extraer Expresión regular
+     */
+    extraer(cadena, extraer) {
+        return cadena.match(extraer);
+    }
+
+    /**
      * Ejecuta los comandos dependiendo del input
      * 
      * @param {JSON} data Datos del framework
      * @param {String} nombre Nombre del framework
      */
     doCommands(data, nombre) {
-        var forms = JSON.parse(atob(data.forms));
-        var comandos = data.commands
+        var forms = data.forms ? JSON.parse(atob(data.forms)) : null;
+        var comandos = data.commands ? data.commands : null;
         var install = data.installCommand;
 
         var self = this;
@@ -393,72 +364,64 @@ export class Interface {
                 commandsToDo.comandos = {};
 
                 // Leemos cada formulario, si está rellenado, obtenemos su comando
-                Object.assign(forms).forEach(element => {
-                    var nombre = element.name
-                    var elem = $("#" + nombre);
-                    var pushCommand = false;
-                    var value = null;
-                    var label = element.label;
-                    switch (element.type) {
-                        case "checkbox-group":
-                            if ($(`#${nombre}-0`).is(':checked')) {
-                                pushCommand = true;
-                                value = $(`#${nombre}-0`).val();
-                                label = element.values[0].label;
-                            }
-                            break;
-                        case "radio-group":
-                            var val = $(`input[name='${nombre}']:checked`).val();
-                            if (val != null && val.trim() != "") {
-                                pushCommand = true;
-                                value = val;
-                            }
-                            break;
-                        default:
-                            if (elem.val() != null && elem.val().trim() != "") {
-                                pushCommand = true;
-                                value = elem.val();
-                            }
-                            break;
-                    }
+                if (forms != null)
+                    Object.assign(forms).forEach(element => {
+                        var nombre = element.name
+                        var elem = $("#" + nombre);
+                        var pushCommand = false;
+                        var value = null;
+                        var label = element.label;
+                        switch (element.type) {
+                            case "checkbox-group":
+                                if ($(`#${nombre}-0`).is(':checked')) {
+                                    pushCommand = true;
+                                    value = $(`#${nombre}-0`).val();
+                                    label = element.values[0].label;
+                                }
+                                break;
+                            case "radio-group":
+                                var val = $(`input[name='${nombre}']:checked`).val();
+                                if (val != null && val.trim() != "") {
+                                    pushCommand = true;
+                                    value = val;
+                                }
+                                break;
+                            default:
+                                if (elem.val() != null && elem.val().trim() != "") {
+                                    pushCommand = true;
+                                    value = elem.val();
+                                }
+                                break;
+                        }
 
-                    if (value == null) value = "";
+                        if (value == null) value = "";
 
-                    tempValues[nombre] = value;
+                        tempValues[nombre] = value;
 
-                    if (pushCommand)
-                        selectedCommands[element.shape] = label + "[@]" + value;
-                });
+                        if (pushCommand)
+                            selectedCommands[element.cmd] = label + "[@]" + value;
+                    });
 
-                /**
-                 * Extrae parte de la cedena
-                 * 
-                 * @param {String} cadena Cadena de caracteres
-                 * @param {RegExp} extraer Expresión regular
-                 */
-                function extraer(cadena, extraer) {
-                    return cadena.match(extraer);
-                }
+                if (comandos != null)
+                    // Recorremos cada comando por orden y guardamos aquellos que vamos a usar
+                    Object.assign(comandos).forEach(command => {
+                        if (selectedCommands[command.DT_RowId]) {
+                            var comandSelected = selectedCommands[command.DT_RowId].split("[@]");
 
-                // Recorremos cada comando por orden y guardamos aquellos que vamos a usar
-                Object.assign(comandos).forEach(command => {
-                    if (selectedCommands[command.DT_RowId]) {
-                        var comandSelected = selectedCommands[command.DT_RowId].split("[@]");
+                            var comando = command.comando;
+                            var inputValue = self.extraer(comando, /%\w+/g);
 
-                        var comando = command.comando;
-                        var inputValue = extraer(comando, /%\w+/g);
-
-                        if (inputValue != null)
-                            switch (inputValue[0]) {
-                                case '%this':
-                                    comando = comando.replace(new RegExp(/%this/g), comandSelected[1]);
-                                    break;
-                                default:
-                                    comando = comando.replace(new RegExp(/%\w+/g), tempValues[inputValue[0].split('%')[1]]);
-                            }
-                        commandsToDo.comandos[comandSelected[0]] = comando;
-                    }
-                });
+                            if (inputValue != null)
+                                switch (inputValue[0]) {
+                                    case '%this':
+                                        comando = comando.replace(new RegExp(/%this/g), comandSelected[1]);
+                                        break;
+                                    default:
+                                        comando = comando.replace(new RegExp(/%\w+/g), tempValues[inputValue[0].split('%')[1]]);
+                                }
+                            commandsToDo.comandos[comandSelected[0]] = comando;
+                        }
+                    });
 
                 var datos = {
                     'commands': commandsToDo
@@ -486,18 +449,61 @@ export class Interface {
      * @param {JSON} data Contenido del formRender
      */
     setFixedRender(element, data) {
-        var forms = JSON.parse(atob(data.forms));
+        if (data != null) {
+            var self = this;
+            var forms = JSON.parse(atob(data));
 
-        Object.assign(forms).forEach(element => {
-            if (!element.multiple)
-                delete element.multiple;
-        });
+            /**
+             * Checkea con js los patrones
+             * 
+             * @param {DOM} elm Elemento del DOM
+             * @param {String} pattern Patrón
+             * @param {String} msg Mensaje del patrón
+             */
+            function checkJS(elm, pattern, msg) {
+                // Comprobar contenido
+                self.waitUntilElement(`.rendered-form [name="${elm}"]`, function () {
+                    if (msg != undefined && msg != "")
+                        $(`.rendered-form [name="${elm}"]`).after(`<div class="feedback-${elm} invalid-feedback">${msg}</div>`);
 
-        $(element).formRender({
-            formData: forms
-        });
+                    $(`.rendered-form [name="${elm}"]`).bind("change keyup", function () {
+                        var el = $(this);
+                        if (el.val().trim().length > 0 && pattern != undefined && pattern != "" && !new RegExp(pattern).test(el.val())) {
+                            el.removeClass("is-valid");
+                            el.addClass("is-invalid");
+                            $(`.feedback-${elm}`).show();
+                        } else {
+                            el.removeClass("is-invalid");
+                            el.addClass("is-valid");
+                            $(`.feedback-${elm}`).hide();
+                        }
 
-        console.clear();
+                        if (el.val().trim().length == 0)
+                            el.removeClass("is-invalid").removeClass("is-valid");
+
+                    });
+                });
+            }
+
+            Object.assign(forms).forEach(element => {
+                if (!element.multiple)
+                    delete element.multiple;
+                // Arreglamos el error del salto de linea
+                element.label = element.label.replace("<br>", "");
+
+                checkJS(element.name, element.pattern, element.patternInfo);
+
+                delete element.pattern;
+                delete element.patternInfo;
+
+            });
+
+            $(element).formRender({
+                formData: forms
+            });
+
+            console.clear();
+        }
     }
 
     /**
@@ -607,10 +613,8 @@ export class Interface {
             $(".toast").toast('show');
 
             // Borramos los posibles eventos del boton
-            $(".toast button").off();
-
             // Eliminamos el div una vez se cierre
-            $(".toast button").click(function () {
+            $(".toast button").off().click(function () {
                 $($(this).parent()).parent().remove();
             });
         }
@@ -637,8 +641,7 @@ export class Interface {
             $("#modal .modal-body").html(mensaje);
 
             if ($("#modal").find("[autofocus]").length > 0) {
-                $("#modal").off();
-                $("#modal").on('shown.bs.modal', function () {
+                $("#modal").off().on('shown.bs.modal', function () {
                     $(this).find("[autofocus]").focus();
                 });
             }
@@ -651,16 +654,14 @@ export class Interface {
 
             if (cancel != null) {
                 $("#modal").off();
-                $("#modal .btn-danger").off();
-                $("#modal .btn-danger").click(function () {
+                $("#modal .btn-danger").off().click(function () {
                     cancel();
                     $(this).off();
                 });
             }
 
-            // Borramos eventos antiguos
-            aceptar.off();
-            aceptar.click(function () {
+            // Borramos eventos antiguos y asignamos
+            aceptar.off().click(function () {
                 if (callback != null)
                     callback();
                 if (closeOnBtn)
@@ -806,7 +807,6 @@ export class Interface {
                         "background-color": "#fff"
                     });
                     iframe.remove();
-                    // console.clear();
                     if ($(".thumbnail").toArray().length == $(".thumbnail > div").toArray().length)
                         $("#buscarProyecto").removeAttr("readonly");
                 });
@@ -825,9 +825,9 @@ export class Interface {
         }
         var self = this;
         this.ajax('common', datos, 'post', 'json', function (datos) {
-            self._listFrameworks = datos;
+            self._listFrameworks = datos.length > 0 ? datos : false;
         }, function () {
-            console.error("Error al obtener la lista de frameworks");
+            interfaz.alerta("exclamation-triangle", "Error", "Error al obtener la lista de frameworks", "danger", false);
         });
     }
 
@@ -844,14 +844,14 @@ export class Interface {
             if (actualizar)
                 self.listaFrameworksIntermediate();
             var lista = this._listFrameworks;
-            if (lista.length > 0)
+            if (lista.length > 0 || !lista)
                 callBack(lista);
             else
                 setTimeout(function () {
                     self.getFrameList(false, callBack);
                 }, 300);
         } else {
-            console.error("Es necesario tener una función callBack");
+            interfaz.alerta("exclamation-triangle", "Error", "Es necesario tener una función callBack: interfaz::getFrameList", "danger", false);
         }
     }
 }

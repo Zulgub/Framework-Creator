@@ -1,1 +1,1 @@
-{"name":"Zend framework","requirements":[{"nombre":"composer","comando":"composer --version","DT_RowId":"15866485881040"}],"mainRoot":".","installCommand":"composer create-project zend\/zend $name"}
+{"name":"Zend framework","requirements":[{"nombre":"composer","comando":"composer --version","DT_RowId":"15866485881040"}],"mainRoot":"public","installCommand":"composer create-project -n -s dev zendframework\/skeleton-application $name"}

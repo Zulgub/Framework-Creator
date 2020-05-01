@@ -12,8 +12,6 @@ session_start();
 $GLOBALS["name"] = "Framework Manager";
 $permisos = 0;
 require_once 'connect.inc.php';
-require_once 'class/db.php';
 require_once 'class/app.php';
 $GLOBALS["app"] = new App;
-$GLOBALS["db"] = new DBConnection($localhost);
 require_once "funciones.inc.php";

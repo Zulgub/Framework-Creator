@@ -15,6 +15,11 @@ body {
   background: #f9f9f9;
 }
 
+.oglibatorio:before {
+  content: "Obligatorio - ";
+  color: rgb(155, 0, 0);
+}
+
 /* Image Icon for the Background */
 .thumbnail-container::before {
   position: absolute;
@@ -30,18 +35,57 @@ body {
   background-repeat: no-repeat;
 }
 
-.uknown-project{
+.uknown-project {
   background-image: url(../img/frameworks/unknown\ info.png);
   background-position: center center;
   background-size: 100% 100%;
 }
 
-progress { background-color: #f3f3f3; border: 1px; height: 38px; width: 200px; border-radius: 9px; color: #000000;}
-/* Safari Chrome */
-progress::-webkit-progress-bar { background-color: #f3f3f3; border-radius: 0px;}
-progress::-webkit-progress-value { border-radius: 0px;}
-/* firefox */
-progress::-moz-progress-bar {border-radius: 0px;}
+.progress-bar {
+  animation: sparkle 10s linear infinite;
+  -webkit-animation: sparkle 10s linear infinite;
+  z-index: 0 !important;
+}
+
+@keyframes sparkle {
+
+  0%,
+  100% {
+    background-color: #71db0d;
+  }
+
+  25% {
+    background-color: #16f7f7;
+  }
+
+  50% {
+    background-color: #1625f7;
+  }
+
+  75% {
+    background-color: #8a16f7;
+  }
+}
+
+@-webkit-keyframes sparkle {
+
+  0%,
+  100% {
+    background-color: #71db0d;
+  }
+
+  25% {
+    background-color: #16f7f7;
+  }
+
+  50% {
+    background-color: #1625f7;
+  }
+
+  75% {
+    background-color: #8a16f7;
+  }
+}
 
 /* This is a masking container for the zoomed iframe element */
 .thumbnail {
@@ -136,6 +180,33 @@ ul.frmb {
   height: 80px;
 }
 
+.sub-nav{
+  display: none;
+  margin-left: -2rem;
+}
+
+.sub-nav li{
+  padding: 0 !important;
+}
+
+.nav-link.active + .sub-nav{
+  display: initial;
+}
+
+.docs-content h4{
+  width: 100%;
+  border-bottom: solid #000 1px;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.docs-content figure{
+  margin-top: 1rem;
+}
+
+.docs-content h5::before{
+  content: "# ";
+}
 /* Ocultamos el botón de añadir opcion para los checkbox, puesto que no queremos que se puedan añadir mas */
 li.form-field[type="checkbox-group"] .option-actions {
   display: none !important;

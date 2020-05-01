@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $GLOBALS["name"]; ?></title>
+    <link rel=stylesheet href="{{assets(assets/codeMirror/lib/codemirror.css)}}">
     <link rel="stylesheet" href="{{assets(assets/css/bootstrap.min.css)}}">
     <link rel="stylesheet" href="{{assets(assets/css/sidebar.css)}}">
     <link href="{{assets(assets/fontawesome-5.12/css/all.css)}}" rel="stylesheet">
@@ -15,7 +16,24 @@
     <script defer src="{{assets(assets/js/bootstrap.min.js)}}"></script>
     <script defer src="{{assets(assets/js/removeBanner.js)}}"></script>
     <script defer src="{{assets(assets/js/push.min.js)}}"></script>
+    <script defer type="text/javascript" src="{{assets(assets/js/forms/form-render.min.js)}}"></script>
+    <script defer type="text/javascript" src="{{assets(assets/js/preview/html2canvas.js)}}"></script>
 
+    <!-- librerias de codemirror -->
+    <link rel="stylesheet" href="{{assets(assets/codeMirror/addon/dialog/dialog.css)}}">
+    <link rel="stylesheet" href="{{assets(assets/codeMirror/addon/search/matchesonscrollbar.css)}}">
+    <script defer src="{{assets(assets/codeMirror/lib/codemirror.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/mode/xml/xml.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/mode/javascript/javascript.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/mode/css/css.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/mode/htmlmixed/htmlmixed.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/edit/matchbrackets.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/dialog/dialog.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/search/searchcursor.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/search/search.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/scroll/annotatescrollbar.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/search/matchesonscrollbar.js)}}"></script>
+    <script defer src="{{assets(assets/CodeMirror/addon/search/jump-to-line.js)}}"></script>
     <!-- @css -->
 
     <!-- @js -->
@@ -34,11 +52,11 @@
             </div>
             <div class="p-4">
                 <h1>
-                    <a href="." class="logo" target="_blank">
+                    <a href="{{assets(view/<?php echo $get["proyecto"]; ?>)}}" class="logo" target="_blank">
                         <div class="preview position-relative">
                             <div class="thumbnail-container w-100 h-100">
                                 <div class="thumbnail">
-                                    <iframe class="preview-img" src="{{assets(projects/<?php echo $get["proyecto"]; ?>)}}" frameborder="0"></iframe>
+                                    <iframe class="preview-img" src="{{assets(view/<?php echo $get["proyecto"]; ?>)}}" frameborder="0"></iframe>
                                 </div>
                             </div>
                             <div class="link m-0 row position-absolute text-white w-100 h-100 text-center">
@@ -51,20 +69,26 @@
                 </h1>
                 <ul class="list-unstyled components mb-5">
                     <li>
-                        <a href="{{assets(.)}}"><span class="fa fa-home mr-3"></span> Inicio</a>
+                        <a href="{{assets(.)}}"><span class="fa fa-home col-3 text-center"></span> Inicio</a>
                     </li>
                     <li>
-                        <a href="{{assets(config)}}"><span class="fa fa-cogs mr-3"></span> Configuración</a>
+                        <a href="{{assets(config)}}"><span class="fa fa-cogs col-3 text-center"></span> Configuración</a>
+                    </li>
+                    <li>
+                        <a href="{{assets(docs)}}"><span class="fa fa-book col-3 text-center"></span> Documentación</a>
+                    </li>
+                    <li>
+                        <a href="{{assets(info)}}"><span class="fa fa-info col-3 text-center"></span> Información</a>
                     </li>
                     <li class="pt-2">
                         Configuración del proyecto
                     </li>
                     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <li id="general-pill" class="active" data-toggle="pill" role="tab" aria-controls="general-pill" href="#general">
-                            <a href="#general"><span class="fa fa-toolbox mr-3"></span> General</a>
+                        <li id="main-files-pill" class="active" data-toggle="pill" role="tab" aria-controls="main-files-pill" href="#main-files">
+                            <a href="#main-files"><span class="fa fa-file-code col-3 text-center"></span> Archivos</a>
                         </li>
                         <li data-toggle="pill" role="tab" aria-controls="quick-pill" href="#quick" id="quick-pill">
-                            <a href="#profile"><span class="fa fa-bolt mr-3"></span> Acceso rápido</a>
+                            <a href="#profile"><span class="fa fa-bolt col-3 text-center"></span> Acceso rápido</a>
                         </li>
                     </div>
                 </ul>
@@ -81,10 +105,10 @@
         <div id="content" class="p-4">
             <div class="row pl-4">
                 <div class="col-md-6 my-1">
-                    <h4 clasS="mb-0"><?php echo $get["name"]; ?></h4>
+                    <h4 clasS="mb-0 project-name"><?php echo $get["name"]; ?></h4>
                     <span data-toggle="tooltip" class="badge badge-warning p-2" data-placement="bottom" title="Framework"><i class="fa fa-puzzle-piece"></i> <?php echo $get["data"]["name"]; ?></span>
-                    <span data-toggle="tooltip" class="badge badge-info p-2" data-placement="bottom" title="Tamaño del proyecto"><i class="fa fa-hdd"></i> <?php echo $get["size"]; ?></span>
-                    <a download="<?php echo preg_replace('/\s+/','',$get["name"]); ?>.zip" class="badge badge-secondary p-2 descarga" href="{{assets(projects/<?php echo $get["proyecto"]; ?>/download)}}">
+                    <span data-toggle="tooltip" class="badge badge-info p-2 size" data-placement="bottom" title="Tamaño del proyecto"><i class="fa fa-hdd"></i> Calculando... <i class="fa fa-spinner fa-spin"></i></span>
+                    <a download="<?php echo preg_replace('/\s+/', '', $get["name"]); ?>.zip" class="badge badge-secondary p-2 descarga" href="{{assets(projects/<?php echo $get["proyecto"]; ?>/download)}}">
                         <i class="fa fa-download"></i> Descargar
                     </a>
                 </div>

@@ -92,7 +92,6 @@ $R->new('projects/{proyecto}/settings', function ($variables) {
         $data = $GLOBALS["app"]->getDataFramework($framework);
         $variables["data"] = $data;
         $variables["name"] = $name;
-        $variables["size"] = $GLOBALS["app"]->getBinderSize($dir);
         new Vista('projects.index', $variables);
     } else {
         $vista = new Vista;
@@ -100,18 +99,25 @@ $R->new('projects/{proyecto}/settings', function ($variables) {
     }
 });
 
-$R->new('projects/{proyecto}', function ($get) {
+$R->new('view/{proyecto}', function ($get) {
     $dir = "projects/{$get["proyecto"]}";
     if (file_exists($dir . "/project-info.txt")) {
         $framework = $GLOBALS["app"]->infoProject($dir, "framework");
         $data = $GLOBALS["app"]->getDataFramework($framework);
-        header("Location: {$data["mainRoot"]}");
+        if (isset($data["mainRoot"]) && !empty($data["mainRoot"]))
+            header("Location: ../$dir/{$data["mainRoot"]}");
+        else
+            header("Location: ../$dir/");
     } else {
         $vista = new Vista;
         $vista->error("404", "Proyecto no encontrado");
     }
 });
 
-$R->new('test', function () {
-    new Vista('test');
+$R->new('info', function () {
+    new Vista('info');
+});
+
+$R->new('docs', function () {
+    new Vista('docs.index');
 });

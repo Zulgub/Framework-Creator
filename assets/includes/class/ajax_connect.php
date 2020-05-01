@@ -1,17 +1,24 @@
 <?php
-header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json');
 require_once '../conf.inc.php';
+set_time_limit(0);
 
 /**
  * Área de intercambio de datos
  *  */
 class Ajax_connect
 {
+    /**
+     * Detecta el sistema operativo
+     */
+    private $os;
     public function __construct($api = null)
     {
-        if (!is_null($api))
+        if (!is_null($api)) {
+            $this->os = php_uname('s');
             echo json_encode($this->data($api), JSON_UNESCAPED_UNICODE);
+        }
     }
 
     /**
@@ -21,25 +28,12 @@ class Ajax_connect
      */
     private function delTree($dir)
     {
-        $files = array_diff(scandir($dir), array('.', '..'));
-        foreach ($files as $file) {
-            do {
-                if (is_writable("$dir/$file")) {
-                    (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");
-                    $continue = false;
-                } else {
-                    $continue = true;
-                    sleep(1);
-                }
-            } while ($continue);
-        }
+        if ($this->os != 'Windows NT')
+            exec("rm -r $dir");
+        else
+            shell_exec("rmdir /s /q \"$dir\"");
 
-        try {
-            @$status =  rmdir($dir);
-        } catch (Exception $e) {
-            $this->delTree($dir);
-        }
-        return $status;
+        return file_exists($dir) ? false : true;
     }
 
     /**
@@ -60,21 +54,20 @@ class Ajax_connect
             $data = json_decode(file_get_contents($file), true);
             file_put_contents($file, json_encode($info, JSON_UNESCAPED_UNICODE));
 
-            $os = php_uname('s');
-            if ($os == 'Windows NT') { // En el caso de windows
+            if ($this->os == 'Windows NT') { // En el caso de windows
                 // Detiene el arbol de procesos
                 shell_exec("TASKKILL /F /PID {$data["pid"]} /T");
             } else { // En sistemas Linux
                 exec("kill -9 php.exe", $output);
             }
-
-            if (file_exists("../../../projects/$nombre"))
-                $get = $this->delTree("../../../projects/$nombre");
-
-            // Si cancelamos la instalación de manera temprana, puede quedar como residuo la carpeta vendor que crea composer
-            if (file_exists("../../../projects/vendor"))
-                $get = $this->delTree("../../../projects/vendor");
         }
+
+        if (file_exists("../../../projects/$nombre"))
+            $get = $this->delTree("../../../projects/$nombre");
+
+        // Si cancelamos la instalación de manera temprana, puede quedar como residuo la carpeta vendor que crea composer
+        if (file_exists("../../../projects/vendor"))
+            $get = $this->delTree("../../../projects/vendor");
 
         return $get;
     }
@@ -84,6 +77,8 @@ class Ajax_connect
      */
     private function data($api)
     {
+        $get = false;
+
         switch ($api) {
             case 'projectList':
                 $resultado = $GLOBALS["app"]->projects();
@@ -97,6 +92,9 @@ class Ajax_connect
             case 'delFile':
                 if (isset($_POST["nameFile"]) && !empty($_POST["nameFile"]))
                     $resultado = $GLOBALS["app"]->borrarArchivo($_POST["nameFile"]);
+                break;
+            case 'frameworks':
+                $resultado = $GLOBALS["app"]->listFrameworks();
                 break;
             case 'listFrameworks':
                 $resultado = $GLOBALS["app"]->listFrameworksName();
@@ -120,20 +118,29 @@ class Ajax_connect
                 $resultado = $errores != 0 ? false : $get;
                 break;
             case 'cancelInstall':
-                $get = false;
                 if (isset($_POST["name"]) && !empty($_POST["name"])) {
                     $get = $this->cancelInstall($_POST["name"]);
                 }
                 $resultado = $get;
                 break;
             case 'delProject':
-                $get = false;
                 if (isset($_POST["name"]) && !empty($_POST["name"]))
                     $get = $this->delTree("../../../projects/{$_POST["name"]}");
                 $resultado = $get;
                 break;
             case 'session':
                 $resultado = $_SESSION;
+                break;
+            case 'readFile':
+                if (isset($_POST["dir"]) && !empty($_POST["dir"]))
+                    $get = $GLOBALS["app"]->readFileProject($_POST["dir"]);
+
+                $resultado = $get;
+                break;
+            case 'saveFileProject':
+                if (isset($_POST["dir"]) && !empty($_POST["dir"]) && isset($_POST["contenido"]) && !empty($_POST["contenido"]))
+                    $get = $GLOBALS["app"]->saveFileProject($_POST["dir"], $_POST["contenido"]);
+                $resultado = $get;
                 break;
             default:
                 $resultado = null;
