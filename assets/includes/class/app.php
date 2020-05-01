@@ -9,6 +9,19 @@ class App
 {
     function __construct()
     {
+        // Comprobamos si existe un archivo residual de alguna descarga fallida y la borramos. Límite de tiempo: 10 min de la ultima edición.
+        $dir = "../../downloads/";
+        if (file_exists($dir)) {
+            $directorio = opendir($dir);
+            while ($archivo = readdir($directorio)) {
+                if (!is_dir($archivo)) {
+                    $info = new SplFileInfo($dir.$archivo);
+                    if ((time() - $info->getMTime()) > 600) {
+                        unlink($dir . $archivo);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -183,6 +196,10 @@ class App
         return $resultado;
     }
 
+    /**
+     * Obtiene las instalaciones actuales
+     * @return Array Instalaciones actuales
+     */
     public function installing()
     {
         $resultado = array();

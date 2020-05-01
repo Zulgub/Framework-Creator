@@ -131,7 +131,7 @@ export class Interface {
                                                     self._comands();
                                                 }
                                             }, function () {
-                                                interfaz.alerta("exclamation-triangle", "Error", "Error al comprobar si existe un proyecto con ese nombre", "danger", false);
+                                                self.alerta("exclamation-triangle", "Error", "Error al comprobar si existe un proyecto con ese nombre", "danger", false);
                                             });
                                         else {
                                             $("#invalid-project-name").show();
@@ -148,10 +148,10 @@ export class Interface {
                                             $(".modal-body").prepend('<label class="form-label row px-4 oglibatorio">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Introduce un nombre</div></label>');
                                             $("#modal").find("[autofocus]").focus();
                                         }, function () {
-                                            interfaz.alerta("exclamation-triangle", "Error", "#Error formRender_01", "danger", false);
+                                            self.alerta("exclamation-triangle", "Error", "#Error formRender_01", "danger", false);
                                         });
                                     }, function () {
-                                        interfaz.alerta("exclamation-triangle", "Error", "Ha ocurrido un error al obtener los datos del framework", "danger", false);
+                                        self.alerta("exclamation-triangle", "Error", "Ha ocurrido un error al obtener los datos del framework", "danger", false);
 
                                     });
                                 } else {
@@ -159,7 +159,8 @@ export class Interface {
                                 <ul>${datos}</ul></div>`);
                                 }
                             }, function (datos) {
-                                interfaz.alerta("exclamation-triangle", "Error", "Error al comprobar los requisitos", "danger", false);
+                                console.log(datos);
+                                self.alerta("exclamation-triangle", "Error", "Error al comprobar los requisitos", "danger", false);
                             });
 
                         } else
@@ -173,9 +174,10 @@ export class Interface {
             });
         });
 
-        this._notify = setInterval(function () {
-            self.actualizarNotificaciones();
-        }, 1000);
+        if ($(".notify-content").length > 0)
+            this._notify = setInterval(function () {
+                self.actualizarNotificaciones();
+            }, 1000);
 
         $(".cancelAll").click(function () {
 
@@ -186,8 +188,8 @@ export class Interface {
 
             var errorMSG = `Se ha detectado un posible error al borrar los archivos de instalación, compruebe manualmente si quedan archivos residuales en "/projects"`;
 
-            self.ajax("common", {
-                "api": "cancelAll"
+            self.ajax("assets/includes/class/runCode.php", {
+                "cancelAll": null
             }, "post", "json", function (datos) {
                 var mensaje = datos ? `Instalaciones canceladas` : errorMSG;
                 var color = datos ? "success" : "danger";
@@ -240,9 +242,8 @@ export class Interface {
                                     <li>Revise que se ha eliminado la carpeta "projects/${datos[instalacion].name}", en caso contrario, <strong>elimínelo</strong>.</li>
                                 </ul>`;
                             // Enviamos el proceso de cancelación
-                            self.ajax("common", {
-                                "api": "cancelInstall",
-                                "name": instalacion
+                            self.ajax("assets/includes/class/runCode.php", {
+                                "cancelInstall": instalacion
                             }, "post", "json", function (datos) {
                                 var mensaje = datos ? `Instalación cancelada` : errorMSG;
                                 var color = datos ? "success" : "danger";
@@ -711,7 +712,7 @@ export class Interface {
      * @param {Function} success Ejecutar en caso de éxito
      * @param {Function} error Ejecutar en caso de error
      */
-    ajax(url = "common", data = null, type = 'post', dataType = 'json', success, error = null) {
+    ajax(url = "common", data = null, type = 'post', dataType = 'json', success = null, error = null) {
 
         // Area de intercambio de información común
         if (url == "common")
@@ -827,7 +828,7 @@ export class Interface {
         this.ajax('common', datos, 'post', 'json', function (datos) {
             self._listFrameworks = datos.length > 0 ? datos : false;
         }, function () {
-            interfaz.alerta("exclamation-triangle", "Error", "Error al obtener la lista de frameworks", "danger", false);
+            self.alerta("exclamation-triangle", "Error", "Error al obtener la lista de frameworks", "danger", false);
         });
     }
 
@@ -851,7 +852,7 @@ export class Interface {
                     self.getFrameList(false, callBack);
                 }, 300);
         } else {
-            interfaz.alerta("exclamation-triangle", "Error", "Es necesario tener una función callBack: interfaz::getFrameList", "danger", false);
+            self.alerta("exclamation-triangle", "Error", "Es necesario tener una función callBack: interfaz::getFrameList", "danger", false);
         }
     }
 }

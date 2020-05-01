@@ -116,20 +116,49 @@ export class Setting {
      * Ejecuta módulos y asigna funciones
      */
     loadModules() {
+        var self = this;
 
         // Animación del botón de descarga
         if ($(".descarga").length > 0) {
             $(".descarga").click(function (e) {
                 var btn = $(this);
-                if (btn.hasClass("stop")) {
-                    e.preventDefault();
-                } else {
-                    setTimeout(function () {
+
+                e.preventDefault();
+
+                if (!btn.hasClass("stop")) {
+                    btn.addClass("stop").html(`Creando archivo <i class="fa fa-spinner fa-spin"></i>`);
+
+                    interfaz.ajax("assets/includes/class/runCode.php", {
+                        download: self._project
+                    }, "post", "json", function (data) {
+
+                        if (data != false) {
+
+                            try {
+                                downloadFile(interfaz.fixRoot(`assets/downloads/${self._project}.zip`));
+
+                                // Borramos le archivo temporal
+                                interfaz.ajax('assets/includes/class/runCode.php', {
+                                    Deldownload: self._project
+                                }, 'post', 'json');
+
+                            } catch (error) {
+
+                            }
+
+                            btn.removeClass("stop").html(`<i class="fa fa-download"></i> Descargar`);
+                        } else {
+                            interfaz.alerta("exclamation-triangle", "Error", "Error al descargar el proyecto", "danger", false);
+                        }
+
+                    }, function () {
                         btn.removeClass("stop").html(`<i class="fa fa-download"></i> Descargar`);
-                    }, 1000);
+                        interfaz.alerta("exclamation-triangle", "Error", "Error al descargar el proyecto", "danger", false);
+                    });
+
                 }
 
-                btn.addClass("stop").html(`Creando archivo <i class="fa fa-spinner fa-spin"></i>`);
+
             });
         }
 
@@ -150,9 +179,11 @@ export class Setting {
                 var project = $(this).data("project");
                 interfaz.modal("¿Desea borrar el proyecto?", "Perderás todo el contenido y no se podrá recuperar", "Borrar", function () {
                     interfaz.modal("Borrando...", 'Borrando proyecto <i class="fa fa-spinner fa-spin">');
-                    interfaz.ajax("common", {
-                        api: "delProject",
-                        name: project
+                    interfaz.waitUntilElement(".btn-danger", function(){
+                        $(".btn-danger").html("Cerrar");
+                    });
+                    interfaz.ajax("assets/includes/class/runCode.php", {
+                        delProject: project
                     }, "POST", "json", function (data) {
                         if (data) {
                             $("#modal").modal("toggle");
