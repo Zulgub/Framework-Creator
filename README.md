@@ -17,6 +17,5 @@ Tan fácil como descargar el repositorio y poner la web en marcha.
 <br>No necesita instalación<br>
 Dentro de la herramienta existe un apartado de documentación.
 
-# AVISO
+# Aviso
 Esta herramienta no funcionará en un hosting, sólo en local o en un VPS.
-
