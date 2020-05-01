@@ -1,7 +1,5 @@
 <?php
 
-use Mockery\Matcher\Pattern;
-
 require_once 'vista.php';
 
 /**
