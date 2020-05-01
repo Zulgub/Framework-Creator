@@ -259,6 +259,9 @@ class RunCode
         $root = "../../../projects";
         $max = count($data["comandos"]) + 1;
 
+        if (!file_exists($root))
+            mkdir($root);
+
         // Obligamos a composer a ejecutar la instalación en modo no interacción
         preg_match('/(?:^composer)(?:.*create-project)(?!.*-n)/', $data["install"], $matches, PREG_OFFSET_CAPTURE);
         $install = count($matches) == 1 ? preg_replace('/create\-project/', "create-project -n", $data["install"]) : $data["install"];
