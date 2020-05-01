@@ -67,7 +67,7 @@ class RunCode
      * Obtiene las instalaciones actuales
      * @return Array Instalaciones actuales
      */
-    public function installing()
+    private function installing()
     {
         $resultado = array();
         $dir = "../installing/";

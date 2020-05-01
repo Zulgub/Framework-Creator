@@ -57,7 +57,7 @@ export class Frameworks {
     /**
      * Guardamos la lista de requisitos para ser usado en otros modulos
      */
-    _requirementesData;;
+    _requirementesData;
 
     /**
      * Schema del framework

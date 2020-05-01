@@ -132,7 +132,7 @@ class Vista
     /**
      * Muestra el contenido de la ruta
      */
-    public function contenido()
+    private function contenido()
     {
         if (file_exists($this->ruta . 'vistas/' . $this->vista . '.php')) {
             require_once 'assets/includes/conf.inc.php';
