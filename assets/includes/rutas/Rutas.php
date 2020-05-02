@@ -63,7 +63,3 @@ $R->new('info', function () {
 $R->new('docs', function () {
     new Vista('docs.index');
 });
-
-$R->new('test', function () {
-    new Vista('test');
-});

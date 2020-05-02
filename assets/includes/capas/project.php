@@ -28,12 +28,12 @@
     <script defer src="{{assets(assets/codeMirror/mode/css/css.js)}}"></script>
     <script defer src="{{assets(assets/codeMirror/mode/htmlmixed/htmlmixed.js)}}"></script>
     <script defer src="{{assets(assets/codeMirror/addon/edit/matchbrackets.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/dialog/dialog.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/search/searchcursor.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/search/search.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/scroll/annotatescrollbar.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/search/matchesonscrollbar.js)}}"></script>
-    <script defer src="{{assets(assets/CodeMirror/addon/search/jump-to-line.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/dialog/dialog.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/search/searchcursor.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/search/search.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/scroll/annotatescrollbar.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/search/matchesonscrollbar.js)}}"></script>
+    <script defer src="{{assets(assets/codeMirror/addon/search/jump-to-line.js)}}"></script>
     <!-- @css -->
 
     <!-- @js -->

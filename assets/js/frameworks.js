@@ -1176,7 +1176,7 @@ export class Frameworks {
                 } else
                     interfaz.alerta("exclamation-triangle", "Errors", "Se ha producido un error al guardar", "danger");
             }, function (data) {
-                console.log("Error:" + data);
+                console.log(data);
                 interfaz.alerta("exclamation-triangle", "Error", "Se ha producido un error al guardar", "danger");
             });
         }

@@ -161,6 +161,8 @@ class RunCode
     {
         $dir = "../../../projects/${project}";
         if (file_exists($dir . "/project-info.txt")) {
+            if (!file_exists("../../downloads/"))
+                mkdir("../../downloads/");
             $name = "../../downloads/" . $project . ".zip";
 
             // Si hay un archivo residual, los borramos
@@ -310,7 +312,7 @@ class RunCode
         if (isset($requisitos["requirements"])) {
             foreach ($requisitos["requirements"] as $key => $value) {
                 exec($value["comando"], $output, $return);
-                if ($return)
+                if ($return == 1 && $this->os == 'Windows NT' || $return == 127 && $this->os != 'Windows NT')
                     $error .= "<li>" . $value["nombre"] . "</li>";
             }
         } else

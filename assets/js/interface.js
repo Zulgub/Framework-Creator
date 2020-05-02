@@ -502,8 +502,6 @@ export class Interface {
             $(element).formRender({
                 formData: forms
             });
-
-            console.clear();
         }
     }
 
