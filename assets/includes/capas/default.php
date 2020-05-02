@@ -13,7 +13,6 @@
     <script defer src="{{assets(assets/js/jquery-ui.min.js)}}"></script>
     <script defer src="{{assets(assets/js/popper.min.js)}}"></script>
     <script defer src="{{assets(assets/js/bootstrap.min.js)}}"></script>
-    <script defer src="{{assets(assets/js/removeBanner.js)}}"></script>
     <script defer src="{{assets(assets/js/push.min.js)}}"></script>
 
     <!-- @css -->

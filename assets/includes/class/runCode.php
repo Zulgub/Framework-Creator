@@ -71,14 +71,16 @@ class RunCode
     {
         $resultado = array();
         $dir = "../installing/";
-        $directorio = opendir($dir);
-        while ($archivo = readdir($directorio)) {
-            $info = new SplFileInfo($archivo);
-            if ($info->getExtension() == "json") {
-                // Obtenemos el contenido del archivo
-                $data = json_decode(file_get_contents($dir . $archivo), true);
-                if (!isset($data["cancel"]))
-                    $resultado[explode("_status", $archivo)[0]] = array("progress" => $data["progress"], "pid" => $data["pid"], "name" => $data["name"], "frame" => $data["framework"]);
+        if (file_exists($dir)) {
+            $directorio = opendir($dir);
+            while ($archivo = readdir($directorio)) {
+                $info = new SplFileInfo($archivo);
+                if ($info->getExtension() == "json") {
+                    // Obtenemos el contenido del archivo
+                    $data = json_decode(file_get_contents($dir . $archivo), true);
+                    if (!isset($data["cancel"]))
+                        $resultado[explode("_status", $archivo)[0]] = array("progress" => $data["progress"], "pid" => $data["pid"], "name" => $data["name"], "frame" => $data["framework"]);
+                }
             }
         }
         return $resultado;
@@ -218,6 +220,10 @@ class RunCode
     private function runExec($root, $cmd, $name = null, $progress = null, $fileName, $frame = null, $rootInfo = "installing/")
     {
         $dir = "../{$rootInfo}{$fileName}_status.json";
+
+        if (!file_exists("../" . $rootInfo))
+            mkdir("../" . $rootInfo);
+
         if (file_exists($dir))
             $data = json_decode(file_get_contents($dir), true);
 
@@ -304,7 +310,7 @@ class RunCode
         if (isset($requisitos["requirements"])) {
             foreach ($requisitos["requirements"] as $key => $value) {
                 exec($value["comando"], $output, $return);
-                if ($return == 1)
+                if ($return)
                     $error .= "<li>" . $value["nombre"] . "</li>";
             }
         } else

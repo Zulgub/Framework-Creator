@@ -57,16 +57,30 @@ class Vista
      * 
      * @param Regex $reGex Expresión regular
      * @param String $stirng Cadena
-     * @param Boolean $unico Por defecto verdadero, indica si es solo un resultado
+     * @param Int $value Indica el tipo de resultado
+     * @param Boolean $delete Indica si debe de borrarse la coincidencia
      * @return String|Boolean Resultado de la búsqueda
      */
-    private function getConfig($reGex, &$string, $unico = true, $delete = true)
+    private function getConfig($reGex, &$string, $value = 0, $delete = true)
     {
         preg_match_all($reGex, $string, $return, PREG_OFFSET_CAPTURE);
         if ($delete)
             $string = preg_replace($reGex, "", $string);
-        if (isset($return[1][0]))
-            return $unico ? $return[1][0][0] : $return[0];
+        if (isset($return[1][0])){
+            switch ($value) {
+                case 1:
+                    return isset($return[0]) ? $return[0] : null;
+                    break;
+                
+                case 2:
+                    return isset($return[0][0][0]) ? $return[0][0][0] : null; 
+                    return;
+                
+                default:
+                return isset($return[1][0][0]) ? $return[1][0][0] : null;
+                    break;
+            }
+           }
         else
             return false;
     }
@@ -144,9 +158,9 @@ class Vista
             // Añade al titulo actual
             $addTitle = $this::getConfig('/@addTitle\(\"([^"]+)\"\)\n?/', $contenido);
             // Añade archivos css
-            $addCss = $this::getConfig('/@addCss\(("[^"]+"\s?=>\s?\[("[^"]+",?)+\],?\s?)+\)\n?/', $contenido, false)[0][0];
+            $addCss = $this::getConfig('/@addCss\(("[^"]+"\s?=>\s?\[("[^"]+",?)+\],?\s?)+\)\n?/', $contenido, 2);
             // Añade archivos js
-            $addJs = $this::getConfig('/@addJs\(("[^"]+"\s?=>\s?\[("[^"]+",?)+\],?\s?)+\)\n?/', $contenido, false)[0][0];
+            $addJs = $this::getConfig('/@addJs\(("[^"]+"\s?=>\s?\[("[^"]+",?)+\],?\s?)+\)\n?/', $contenido, 2);
 
             if ($capa) {
                 $capa = $this->capa($capa);
@@ -183,7 +197,7 @@ class Vista
 
                 // Aplicamos la funcion assets
                 $regex = '/(\{\{assets\(([^\)]+)\)\}\})/';
-                $assets = $this::getConfig($regex, $contenido, false, false);
+                $assets = $this::getConfig($regex, $contenido, 1, false);
                 if (!empty($assets))
                     foreach ($assets as $key => $value) {
                         preg_match_all($regex, $value[0], $return, PREG_OFFSET_CAPTURE);

@@ -1,6 +1,6 @@
 import {
     Interface
-} from "./interface";
+} from "./interface.js";
 
 var interfaz = new Interface(false);
 
@@ -8,21 +8,7 @@ var interfaz = new Interface(false);
  * Clase del apartado de configuración de los proyectos
  */
 export class Setting {
-    /**
-     * Datos del framework
-     */
-    _datos;
-
-    /**
-     * Indica el framework usado
-     */
-    _framework;
-
-    /**
-     * Indica el nombre del proyecto
-     */
-    _project;
-
+    
     /**
      * Constructor de la clase setting
      * 
@@ -30,8 +16,17 @@ export class Setting {
      * @param {String} framework Nombre del framework
      */
     constructor(project, framework) {
+        /**
+     * Indica el nombre del proyecto
+     */
         this._project = project;
+        /**
+     * Indica el framework usado
+     */
         this._framework = framework;
+        /**
+     * Datos del framework
+     */
         this._datos = null;
 
         this.loadModules();

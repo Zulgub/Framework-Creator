@@ -1,6 +1,6 @@
 import {
     Interface
-} from "./interface";
+} from "./interface.js";
 
 var interfaz = new Interface(false);
 
@@ -10,81 +10,6 @@ var interfaz = new Interface(false);
 export class Frameworks {
 
     /**
-     * Tabla de comandos
-     */
-    _table = null;
-
-    /**
-     * Editor del framework
-     */
-    _editor = null;
-
-    /**
-     * Nombre del framework
-     */
-    _name;
-
-    /**
-     * Datos del archivo json
-     */
-    _datos;
-
-    /**
-     * Nombre del framework para uso especial (Se modificará, sin afectar a la estructura)
-     */
-    _tempName;
-
-    /**
-     * Nombre para estructuras html
-     */
-    _nameHTML;
-
-    /**
-     * Elemento padre
-     */
-    _parent;
-
-    /**
-     * Archivo de configuración
-     */
-    _file;
-
-    /**
-     * Lista de requisitos
-     */
-    _requirements;
-
-    /**
-     * Guardamos la lista de requisitos para ser usado en otros modulos
-     */
-    _requirementesData;
-
-    /**
-     * Schema del framework
-     * */
-    _schema;
-
-    /**
-     * Schema quick
-     * */
-    _quick;
-
-    /**
-     * Ruta de archivos
-     */
-    _files;
-
-    /**
-     * Lista de comandos
-     */
-    _commands;
-
-    /**
-     * Estado bloqueado del botón de guardar
-     */
-    _lockSave;
-
-    /**
      * Constructor de la clase Framework
      * 
      * @param {Object} datos Nombre del frameworks
@@ -92,28 +17,79 @@ export class Frameworks {
      */
     constructor(datos = null, fileName) {
         if (datos != null) {
+
+            /**
+             * Tabla de comandos
+             */
+            this._table = null;
+
+            /**
+             * Editor del framework
+             */
+            this._editor = null;
+            /**
+             * Datos del archivo json
+             */
             this._datos = datos;
 
+            /**
+             * Nombre del framework
+             */
             this._name = datos.name;
 
+            /**
+             * Nombre del framework para uso especial (Se modificará, sin afectar a la estructura)
+             */
             this._tempName = datos.name;
 
+            /**
+             * Nombre para estructuras html
+             */
             this._nameHTML = datos.name.replace(/\s/g, '_');
 
+            /**
+             * Elemento padre
+             */
             this._parent = null;
 
+            /**
+             * Archivo de configuración
+             */
             this._file = fileName;
 
+            /**
+             * Lista de requisitos
+             */
             this._requirements = datos.requirements;
 
+            /**
+             * Guardamos la lista de requisitos para ser usado en otros modulos
+             */
+            this._requirementesData;
+
+            /**
+             * Schema del framework
+             * */
             this._schema = datos.forms != null ? JSON.parse(atob(datos.forms)) : null;
 
+            /**
+             * Schema quick
+             * */
             this._quick = datos.quick != null ? JSON.parse(atob(datos.quick)) : null;
 
+            /**
+             * Ruta de archivos
+             */
             this._files = datos.files != null ? datos.files : null;
 
+            /**
+             * Lista de comandos
+             */
             this._commands = datos.commands;
 
+            /**
+             * Estado bloqueado del botón de guardar
+             */
             this._lockSave = false;
         }
         var min = datos == null;
@@ -130,6 +106,9 @@ export class Frameworks {
         if (!min) {
             this.ui();
 
+            /**
+             * Guardamos la lista de requisitos para ser usado en otros modulos
+             */
             this._requirementesData = this.requirementsTable('#requirements-' + this._nameHTML, this._requirements);
 
             this._filesData = this.filesTable();

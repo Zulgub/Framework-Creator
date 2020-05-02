@@ -15,7 +15,7 @@ class App
             $directorio = opendir($dir);
             while ($archivo = readdir($directorio)) {
                 if (!is_dir($archivo)) {
-                    $info = new SplFileInfo($dir.$archivo);
+                    $info = new SplFileInfo($dir . $archivo);
                     if ((time() - $info->getMTime()) > 600) {
                         unlink($dir . $archivo);
                     }
@@ -204,14 +204,16 @@ class App
     {
         $resultado = array();
         $dir = "../installing/";
-        $directorio = opendir($dir);
-        while ($archivo = readdir($directorio)) {
-            $info = new SplFileInfo($archivo);
-            if ($info->getExtension() == "json") {
-                // Obtenemos el contenido del archivo
-                $data = json_decode(file_get_contents($dir . $archivo), true);
-                if (!isset($data["cancel"]))
-                    $resultado[explode("_status", $archivo)[0]] = array("progress" => $data["progress"], "pid" => $data["pid"], "name" => $data["name"], "frame" => $data["framework"]);
+        if (file_exists($dir)) {
+            $directorio = opendir($dir);
+            while ($archivo = readdir($directorio)) {
+                $info = new SplFileInfo($archivo);
+                if ($info->getExtension() == "json") {
+                    // Obtenemos el contenido del archivo
+                    $data = json_decode(file_get_contents($dir . $archivo), true);
+                    if (!isset($data["cancel"]))
+                        $resultado[explode("_status", $archivo)[0]] = array("progress" => $data["progress"], "pid" => $data["pid"], "name" => $data["name"], "frame" => $data["framework"]);
+                }
             }
         }
         return $resultado;
