@@ -1,5 +1,7 @@
 # Framework-Manager
-Proyecto final de curso
+Proyecto final de curso<br>
+<img src="https://img.shields.io/github/downloads/juanjo96Dev/Framework-Manager/total?label=Descargas">
+
 
 Requisitos
 <p>
