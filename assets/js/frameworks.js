@@ -278,6 +278,8 @@ export class Frameworks {
             <div class="tab-pane p-2 fade" id="${this._nameHTML}-commands" role="tabpanel">
                 <button class="btn btn-primary d-block mx-auto mb-3" data-toggle="collapse" data-target="#info"><i class="fa fa-question-circle"></i> Ayuda</button>
                 <div class="alert alert-primary collapse" id="info">
+                    <strong>Se debe usar comandos que no requieran intervención humana.<br>
+                    Ej: responder a una pregunta durante la ejecución</strong><br><br>
                     Para editar/borrar pulse sobre el área de la fila que desea editar/borrar (La columna orden no sirve).<br>
                     Puede editar/borrar múltiples filas haciendo clic en sus áreas y manteniendo la tecla <strong>CTRL</strong> pulsada.<br>
                     Puede editar/borrar múltiples filas consecutivas haciendo clic en sus áreas y manteniendo la tecla <strong>Mayus</strong> pulsada.<br>
