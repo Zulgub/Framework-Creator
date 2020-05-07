@@ -247,7 +247,7 @@ export class Frameworks {
                     <div class="form-group row">
                         <label for="install-command-${this._nameHTML}" class="col-xl-4 col-form-label oglibatorio">Comando de instalación:</label>
                         <div class="col-sm-10">
-                            <input type="text" id="install-command-${this._nameHTML}" class="form-control" value="${install}" required>
+                            <input type="text" id="install-command-${this._nameHTML}" class="form-control" value='${install}' required>
                             <div class="invalid-feedback">
                                 ¡Debes establecer un comando de instalación!
                                 <br>

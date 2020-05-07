@@ -778,7 +778,7 @@ export class Interface {
     }
 
     /**
-     * Camia el iframe por una captura de éste
+     * Cambia el iframe por una captura de éste
      */
     vistaPrevia() {
 
@@ -803,7 +803,8 @@ export class Interface {
                     parent.append(div);
                     parent.find("div").css({
                         "background": `url(${data})`,
-                        "background-color": "#fff"
+                        "background-color": "#fff",
+                        "background-size": "100% 100%"
                     });
                     iframe.remove();
                     if ($(".thumbnail").toArray().length == $(".thumbnail > div").toArray().length)
