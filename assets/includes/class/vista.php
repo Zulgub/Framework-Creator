@@ -40,11 +40,9 @@ class Vista
     public function error($code = "404", $infoCode = "File not found")
     {
         if (file_exists($this->ruta . 'vistas/error.php')) {
-            ob_start();
-            require_once($this->ruta . 'vistas/error.php');
-            $documento =  ob_get_contents();
-            ob_end_clean();
-            echo $documento;
+            $this->variables = array("code" => $code, "infoCode" => $infoCode);
+            $this->vista = 'error';
+            $this->contenido();
         } else {
             header("HTTP/1.0 404 Not Found");
             echo "Error 404";
@@ -66,22 +64,21 @@ class Vista
         preg_match_all($reGex, $string, $return, PREG_OFFSET_CAPTURE);
         if ($delete)
             $string = preg_replace($reGex, "", $string);
-        if (isset($return[1][0])){
+        if (isset($return[1][0])) {
             switch ($value) {
                 case 1:
                     return isset($return[0]) ? $return[0] : null;
                     break;
-                
+
                 case 2:
-                    return isset($return[0][0][0]) ? $return[0][0][0] : null; 
+                    return isset($return[0][0][0]) ? $return[0][0][0] : null;
                     return;
-                
+
                 default:
-                return isset($return[1][0][0]) ? $return[1][0][0] : null;
+                    return isset($return[1][0][0]) ? $return[1][0][0] : null;
                     break;
             }
-           }
-        else
+        } else
             return false;
     }
 
@@ -194,16 +191,17 @@ class Vista
                 $capa = preg_replace('/<!--\s*@js\s*-->/', $js, $capa);
 
                 $contenido = str_replace("@contenido", $contenido, $capa);
-
-                // Aplicamos la funcion assets
-                $regex = '/(\{\{assets\(([^\)]+)\)\}\})/';
-                $assets = $this::getConfig($regex, $contenido, 1, false);
-                if (!empty($assets))
-                    foreach ($assets as $key => $value) {
-                        preg_match_all($regex, $value[0], $return, PREG_OFFSET_CAPTURE);
-                        $contenido = str_replace($value[0], $this->assets($return[2][0][0]), $contenido);
-                    }
             }
+
+            // Aplicamos la funcion assets
+            $regex = '/(\{\{assets\(([^\)]+)\)\}\})/';
+            $assets = $this::getConfig($regex, $contenido, 1, false);
+            if (!empty($assets))
+                foreach ($assets as $key => $value) {
+                    preg_match_all($regex, $value[0], $return, PREG_OFFSET_CAPTURE);
+                    $contenido = str_replace($value[0], $this->assets($return[2][0][0]), $contenido);
+                }
+
             echo $contenido;
         } else {
             $this->error("404", "Vista no encontrada");

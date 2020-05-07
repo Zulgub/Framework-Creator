@@ -14,4 +14,6 @@ $permisos = 0;
 require_once 'connect.inc.php';
 require_once 'class/app.php';
 $GLOBALS["app"] = new App;
+$GLOBALS["phpV"] = phpversion();
+$GLOBALS["warnPhp"] = phpversion() < 5;
 require_once "funciones.inc.php";

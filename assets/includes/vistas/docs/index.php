@@ -48,7 +48,12 @@
                                 <li><a href="https://nodejs.org/es/" target="_blank">Node</a></li>
                             </ul>
 
-                            A nivel de software se require alojar la herramienta en un servidor con <strong>PHP5+</strong>
+                            A nivel de software se require alojar la herramienta en un servidor con <strong>PHP5+</strong><br>
+                            <?php
+                            $color = $GLOBALS["warnPhp"]  ? "danger" : "success";
+                            $alerta = $GLOBALS["warnPhp"] ? "<div class='alert alert-danger mt-1'><i class='fa fa-exclamation-triangle'></i> ¡Utilice una versión PHP5+!</div>" : ""; ?>
+                            <div class="badge badge-<?php echo $color; ?> p-2" data-toggle="tooltip" data-placement="bottom" title="Versión de PHP"><i class="fab fa-php"></i> <?php echo $GLOBALS["phpV"]; ?></div>
+                            <?php echo $alerta; ?>
                         </div>
                     </div>
                 </div>

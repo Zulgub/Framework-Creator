@@ -1,0 +1,44 @@
+body {
+    background-image: url(../img/error.jpg);
+    background-size: cover;
+}
+
+.board {
+    box-sizing: border-box;
+    font: 75px/75px Monoton, cursive;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 0 80px #ff8f00, 0 0 30px #b28e22, 0 0 6px #8b4800;
+    color: red;
+    z-index: -1;
+}
+
+#error {
+    color: #FFF;
+    text-shadow: 0 0 80px #0000, 0 0 30px #fff, 0 0 6px #000;
+}
+
+#info {
+    color: #FFF;
+    font: 25px/25px Monoton, cursive;
+}
+
+#error .novacancy.on {
+    color: #FFF;
+    text-shadow: 0 0 80px #000, 0 0 30px #fff, 0 0 6px #fff;
+}
+
+#error .novacancy.off {
+    color: #FFF;
+    opacity: 0.3;
+}
+
+#code .novacancy.on {
+    color: Red;
+    text-shadow: 0 0 80px Red, 0 0 30px FireBrick, 0 0 6px DarkRed;
+}
+
+#code .novacancy.off {
+    color: Red;
+    opacity: 0.3;
+}
