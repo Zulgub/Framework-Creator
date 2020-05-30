@@ -20,6 +20,15 @@ body {
   color: rgb(155, 0, 0);
 }
 
+.faq{
+  color: rgb(10, 43, 225);
+  font-size: 1rem;
+  font-weight: bolder;
+}
+.faq:hover{
+  color: rgb(0, 14, 92);
+}
+
 /* Image Icon for the Background */
 .thumbnail-container::before {
   position: absolute;

@@ -38,11 +38,11 @@ class Ruta
     }
 
     /**
-     * Ejecuta el controlador
+     * Ejecuta la vista
      */
     public function run()
     {
-        if ($GLOBALS["warnPhp"]) {
+        if ($GLOBALS["warnPhp"]) { // Requisito de versión de PHP
             $vista = new Vista;
             $vista->error(">:(", '<i class="fa fa-exclamation-triangle"></i> Versión de PHP: ' . $GLOBALS["phpV"] . '<br><br>Debe usar <strong>PHP5+</strong>');
         } else {
@@ -50,12 +50,12 @@ class Ruta
 
             $pagina = preg_replace('/\.php$/', '', $pagina);
             $encontrado = 0;
-            foreach ($this->rutas as $key => $value) {
+            foreach ($this->rutas as $key => $vista) {
                 // Para permitir URL terminadas en barra o no
-                $final = substr($value["url"], -1) == "/" ? "?" : "\/?";
-                preg_match_all('/^' . $value["url"] . $final . '$/', $pagina, $found);
+                $final = substr($vista["url"], -1) == "/" ? "?" : "\/?";
+                preg_match_all('/^' . $vista["url"] . $final . '$/', $pagina, $found);
                 if (isset($found[0][0])) {
-                    $variables = $value["variables"];
+                    $variables = $vista["variables"];
                     $i = 1;
                     foreach ($variables as $key => $var) {
                         if (isset($found[$i][0]))
@@ -63,11 +63,11 @@ class Ruta
                         $i++;
                     }
                     $encontrado++;
-                    $value["callBack"]($variables);
+                    $vista["callBack"]($variables);
                     break;
-                } else if ($pagina == $value["url"]) {
+                } else if ($pagina == $vista["url"]) {
                     $encontrado++;
-                    $value["callBack"](null);
+                    $vista["callBack"](null);
                     break;
                 }
             }

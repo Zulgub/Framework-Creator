@@ -56,10 +56,14 @@ $R->new('view/{proyecto}', function ($get) {
     }
 });
 
-$R->new('info', function () {
-    new Vista('info');
-});
-
 $R->new('docs', function () {
     new Vista('docs.index');
+});
+
+$R->new('faq', function () {
+    new Vista('docs.faq');
+});
+
+$R->new('info', function () {
+    new Vista('info');
 });

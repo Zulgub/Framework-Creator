@@ -57,7 +57,7 @@ class Vista
      * @param String $stirng Cadena
      * @param Int $value Indica el tipo de resultado
      * @param Boolean $delete Indica si debe de borrarse la coincidencia
-     * @return String|Boolean Resultado de la búsqueda
+     * @return Array|Boolean Resultado de la búsqueda
      */
     private function getConfig($reGex, &$string, $value = 0, $delete = true)
     {

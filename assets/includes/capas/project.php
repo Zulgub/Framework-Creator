@@ -78,6 +78,9 @@
                         <a href="{{assets(docs)}}"><span class="fa fa-book col-3 text-center"></span> Documentación</a>
                     </li>
                     <li>
+                        <a href="{{assets(faq)}}"><span class="fa fa-question-circle col-3 text-center"></span> FAQ</a>
+                    </li>
+                    <li>
                         <a href="{{assets(info)}}"><span class="fa fa-info col-3 text-center"></span> Información</a>
                     </li>
                     <li class="pt-2">

@@ -261,6 +261,7 @@ export class Frameworks {
                                 ¡Debe aparecer $name!
                             </div>
                             <div class="text-muted">Usa <strong>$name</strong> para obtener el nombre del proyecto</div>
+                            <a href="${interfaz.fixRoot('faq#installCommand')}" target="_blank" class="faq"><i class="fa fa-external-link-alt"></i> ¿No te funciona el comando de instalación?</a>
                         </div>
                     </div>
                 </form>

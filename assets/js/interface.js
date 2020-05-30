@@ -34,6 +34,8 @@ export class Interface {
     loadModules() {
         var self = this;
 
+        this.activateLink();
+
         Push.Permission.request(null, function () {
             self.modal("Permitir notificaciones", "Permite a este sitio que te envíe notificaciones cuando no estés en la web", "Aceptar", null, null, true);
         });
@@ -147,18 +149,17 @@ export class Interface {
                                                 $(".modal-body").prepend('<label class="form-label row px-4 oglibatorio">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Introduce un nombre</div></label>');
                                                 $("#modal").find("[autofocus]").focus();
                                             } else {
-                                                $(".modal-body").prepend(`<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error: La configuración del framework no es correcta. <a href="${self.fixRoot(`config#${datos.name.replace(/\s/g, '_')}`)}">Revise la configuración</a></div>`);
+                                                $(".modal-body").prepend(`<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error: La configuración del framework no es correcta. <a href="${self.fixRoot(`config#${datos.name.replace(/\s/g, '_')}`)}">Revise la configuración</a></div><a class="faq" target="_blank" href="${self.fixRoot('faq#install')}"><i class="fa fa-external-link-alt"></i> ¿Has corregido el error y sigue apareciendo este mensaje?</a>`);
                                             }
                                         }, function () {
                                             self.alerta("exclamation-triangle", "Error", "#Error formRender_01", "danger", false);
                                         });
                                     }, function () {
                                         self.alerta("exclamation-triangle", "Error", "Ha ocurrido un error al obtener los datos del framework", "danger", false);
-
                                     });
                                 } else {
                                     $(".modal-body").html(`<div class="alert alert-danger">Para que este framework funcione se require lo siguiente:
-                                <ul>${datos}</ul></div>`);
+                                <ul>${datos}</ul></div><a class="faq" target="_blank" href="${self.fixRoot('faq#requirements')}"><i class="fa fa-external-link-alt"></i> ¿Cumples los requisitos y sigue apareciendo este mensaje?</a>`);
                                 }
                             }, function (datos) {
                                 console.log(datos);
@@ -201,6 +202,12 @@ export class Interface {
                 self.alerta("exclamation-triangle", "Error", errorMSG, "danger", false);
             });
         });
+    }
+
+    activateLink(){
+        const path = window.location.pathname.split("/");
+        this.removeItemFromArr(path, "");      
+        $('a[activeLink]').toArray().map(function(x){if($(x).attr("href").indexOf(path[path.length - 1]) != -1){ $(x).addClass($(x).attr('activeLink')) }});
     }
 
     /**
@@ -532,11 +539,12 @@ export class Interface {
      * @param {String} item Elemento
      */
     removeItemFromArr ( arr, item ) {
-        var i = arr.indexOf( item );
-     
-        if ( i !== -1 ) {
-            arr.splice( i, 1 );
-        }
+        do{
+            var i = arr.indexOf( item );
+            if ( i !== -1 ) {
+                arr.splice( i, 1 );
+            }
+        }while(i !== -1);
     }
 
     /**
