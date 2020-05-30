@@ -15,7 +15,7 @@ export class Frameworks {
      * @param {Object} datos Nombre del frameworks
      * @param {String} fileName Archivo de configuración
      */
-    constructor(datos = null, fileName) {
+    constructor(datos = null, fileName = null) {
         if (datos != null) {
 
             /**
@@ -27,6 +27,12 @@ export class Frameworks {
              * Editor del framework
              */
             this._editor = null;
+
+            /**
+             * Editor de acceso rápido
+             */
+            this._quickEditor = null;
+
             /**
              * Datos del archivo json
              */
@@ -92,7 +98,7 @@ export class Frameworks {
              */
             this._lockSave = false;
         }
-        var min = datos == null;
+        var min = datos == null || fileName == null;
         // Cargamos los modulos
         this.loadModules(min);
     }
@@ -119,8 +125,9 @@ export class Frameworks {
 
             this._parent.find("button.save").click(function () {
                 interfaz.getFrameList(true, function (lista) {
-                    self.checkErrors(true, lista);
-                    self.saveFramework();
+                    if(self.checkErrors(true, lista)){
+                        self.saveFramework();
+                    }
                 })
             });
 
@@ -287,8 +294,8 @@ export class Frameworks {
                     Para ordenar los comandos tienes que hacer click sobre el número del orden, y arrastrar.<br>
                     Formas de obtener valores:
                     <ul>
-                        <li>Valor de un input: %<nombre del input>, ej: %frontend</li>
-                        <li>Valor del input asociado: %this</li>
+                        <li>Valor de un input(Sólo editor de formulario): %<nombre del input>, ej: %frontend</li>
+                        <li>Valor del input que ejecuta dicho comando: %this</li>
                     </ul>
                 </div>
                 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="comandos-${this._nameHTML}" width="100%">
@@ -761,6 +768,7 @@ export class Frameworks {
      * Comprueba errores
      * @param {Boolean} mostrarMensaje Indica si se debe mostrar el mensaje
      * @param {Array} listaFrameworks Lista de nombre de los frameworks
+     * @return {Boolean} status
      */
     checkErrors(mostrarMensaje = false, listaFrameworks = null) {
         var errores = 0;
@@ -835,11 +843,11 @@ export class Frameworks {
          * @param {String} pill Elemento del DOM donde mostrar errores
          */
         function comprobarForms(variable, schema, pill) {
-            var noEncontrados = 0;
-            var elementosFormularioErrores = [];
+            let noEncontrados = 0;
+            let elementosFormularioErrores = [];
 
 
-            var formList = variable != null ? variable.actions.getData() : schema;
+            const formList = variable != null ? variable.actions.getData() : schema;
             if (formList != null) {
                 var contador = 0;
                 formList.forEach(form => {
@@ -867,7 +875,7 @@ export class Frameworks {
 
                 mensaje += "¡Debe solucionar los errores marcados en la página!";
 
-                var ese = noEncontrados == 1 ? "" : "s";
+                const ese = noEncontrados == 1 ? "" : "s";
 
                 $(`#${self._nameHTML}-${pill}-tab`).append(` <i class="fa fa-exclamation-triangle text-danger"></i>`);
 
@@ -882,6 +890,40 @@ export class Frameworks {
 
         comprobarForms(this._quickEditor, this._quick, "quick");
 
+        // Reset: Aleta de los comandos
+        $(`#${this._nameHTML}-commands-tab i`).remove();
+        $(`#${self._nameHTML}-commands .alert`).remove();
+        $(`#comandos-${self._nameHTML} .commandNotFound`).removeClass("commandNotFound");
+
+        // Comandos: Comprobamos que existe el formulario del que recoge los datos
+        const pattern = /(?:\%([^\s'"]+))/g;
+        let commandError = 0;
+        for (let index = 0; index < this._table.rows().data().length; index++) {
+            const now = self._table.rows().data()[index];
+            const command = now.comando;
+            const id = now.DT_RowId;
+            if (pattern.test(command)) {
+                let formGroup = interfaz.extraer(command, pattern);
+                formGroup = formGroup.map(function(x){ return x.substr(1); });
+                interfaz.removeItemFromArr(formGroup, "this");
+                if(formGroup.length > 0){
+                    let formList = this._editor != null ? self._editor.actions.getData() : self._schema;
+                    formList = formList.map(form => {return form.name;});
+                    formGroup.map(function(elm) { if(!formList.includes(elm)){commandError++; $(`#comandos-${self._nameHTML} #${id}`).addClass("commandNotFound")}});
+                }
+            }
+        }
+
+        if(commandError > 0){
+            errores++;
+            const ese = commandError == 1 ? "" : "s";
+            $(`#${this._nameHTML}-commands-tab`).append(` <i class="fa fa-exclamation-triangle text-danger"></i>`);
+            const msg = `¡Hay ${commandError} comando${ese} de la lista haciendo referencia a un elemento del formulario que no existe!`;
+            $(`#${self._nameHTML}-commands`).prepend(`<div class="alert alert-danger text-center">
+                        <i class="fa fa-exclamation-triangle"></i> ${msg}
+                    </div>`);
+            mensaje += msg;
+        }
 
         $(`#list-${this._nameHTML}-list i`).remove();
         if (errores > 0) {
@@ -890,6 +932,8 @@ export class Frameworks {
             if (mensaje.length > 0 && mostrarMensaje)
                 interfaz.modal("¡Atención!", mensaje, "Cerrar", null, null, true);
         }
+
+        return errores == 0;
     }
 
     /**
@@ -1041,11 +1085,30 @@ export class Frameworks {
                     }
 
                     var command = this.field('comando');
+                    var commandError = false;
                     if (!command.val().trim().length > 0) {
                         command.error('¡Debes introducir un comando!');
-                        if (name.val().trim().length > 0 && !repetido)
-                            command.focus();
+                        commandError = true;
                     }
+
+                    // Comprobamos que existe el formulario del que recoge los datos
+                    const pattern = /(?:\%([^\s"']+))/g;
+                    if (pattern.test(command.val())) {
+                        let notFound = false;
+                        let formGroup = interfaz.extraer(command.val(), pattern);
+                        formGroup = formGroup.map(function(x){ return x.substr(1); });
+                        interfaz.removeItemFromArr(formGroup, "this");
+                        if(formGroup.length > 0){
+                            let formList = self._editor != null ? self._editor.actions.getData() : self._schema;
+                            formList = formList.map(form => {return form.name;});
+                            formGroup.map(function(elm) { if(!formList.includes(elm)) commandError = notFound = true;} );
+                            if(notFound)
+                                command.error('¡No existe un input con ese nombre!');
+                        }
+                    }
+
+                    if (commandError && name.val().trim().length > 0 && !repetido)
+                        command.focus();
                 }
 
                 // Si no hay un error, no mutesra nada
@@ -1597,4 +1660,10 @@ if ($("#newFramework").length > 0) {
             <span class="text-muted">Error: #loadSchema_01</span>
             </div>`);
     });
+}
+
+// Selecciona el framework indicado
+if(window.location.hash){
+    const select = `#list-${window.location.hash.split('#')[1]}-list`;
+    interfaz.waitUntilElement(select, function(){$(select).click();});
 }

@@ -50,7 +50,7 @@ export class Interface {
         }
 
         $(".newProject").click(function () {
-            self.getFrameList(true, function (list) {
+            self.getFrameList(true, function (list) {              
                 if (list.length > 0) {
                     var select = '<select class="form-control" id="frameSelected"><option value="">Seleccione un framework</option>';
                     list.forEach(op => {
@@ -62,7 +62,6 @@ export class Interface {
                         var selected = $("#frameSelected").val();
                         parent.find(".invalid-feedback").hide();
                         if (selected != "") {
-
                             self.modal("Requisitos del framework", `<div class="text-center">Comprobando requisitos <i class="fa fa-spinner fa-spin"></i></div>`);
 
                             self.ajax("assets/includes/class/runCode.php", {
@@ -140,13 +139,16 @@ export class Interface {
                                     }, null, false, false);
 
                                     self.ajax(`assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
-
                                         self.waitUntilElement(".modal-body", function () {
-                                            self._comands = self.doCommands(datos, self.ucFirst(selected));
-                                            if (datos.forms && datos.commands)
-                                                self.setFixedRender(".modal-body", datos.forms);
-                                            $(".modal-body").prepend('<label class="form-label row px-4 oglibatorio">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Introduce un nombre</div></label>');
-                                            $("#modal").find("[autofocus]").focus();
+                                            if(self.checkErrors(datos)){
+                                                self._comands = self.doCommands(datos, self.ucFirst(selected));
+                                                if (datos.forms && datos.commands)
+                                                    self.setFixedRender(".modal-body", datos.forms);
+                                                $(".modal-body").prepend('<label class="form-label row px-4 oglibatorio">Nombre del proyecto: <input type="text" id="name-project" autofocus class="form-control" placeholder="Introduce un nombre para el proyecto"></input><div class="invalid-feedback" id="invalid-project-name">Introduce un nombre</div></label>');
+                                                $("#modal").find("[autofocus]").focus();
+                                            } else {
+                                                $(".modal-body").prepend(`<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Error: La configuración del framework no es correcta. <a href="${self.fixRoot(`config#${datos.name.replace(/\s/g, '_')}`)}">Revise la configuración</a></div>`);
+                                            }
                                         }, function () {
                                             self.alerta("exclamation-triangle", "Error", "#Error formRender_01", "danger", false);
                                         });
@@ -199,6 +201,79 @@ export class Interface {
                 self.alerta("exclamation-triangle", "Error", errorMSG, "danger", false);
             });
         });
+    }
+
+    /**
+     * Comprueba los errores
+     * 
+     * @param {JSON} datos del framework 
+     * @return {Boolean} Estado de la comprobación
+     */
+    checkErrors(datos){
+        const self = this;
+
+        const commands = datos.commands;
+
+        const commandsIds = commands != null ? commands.map(function(x){ return x.DT_RowId}) : null;
+
+        /**
+         * Comprueba el editor de formularios
+         * @param {string} formList Formulario
+         * @return {Boolean} Estado de la comprobación
+         */
+        function comprobarForms(formList) {
+
+            let noEncontrados = 0;
+
+            if (formList != null) {
+                formList = JSON.parse(atob(formList));
+                var contador = 0;
+                formList.forEach(form => {
+                    if (commandsIds != null && !commandsIds.includes(form.cmd)) {
+                        noEncontrados++;
+                    }
+                    contador++;
+                });
+            }
+
+            return noEncontrados == 0;
+        }
+
+        /**
+         * Comprueba los comandos
+         * 
+         * @param {Array} commands Lista de comandos
+         * @param {string} formList Formulario
+         * @return {Boolean} Estado de la comprobación
+         */
+        function comprobarCommands(commands, formList = null){
+
+            formList = formList != null ? JSON.parse(atob(formList)).map(form => {return form.name;}) : null;
+
+            const pattern = /(?:\%([^\s'"]+))/g;
+            let commandError = 0;
+            if(commands != undefined){
+                for (let index = 0; index < commands.length; index++) {
+                    const now = commands[index];                    
+                    const command = now.comando;
+                    const id = now.DT_RowId;
+                    if (pattern.test(command)) {
+                        let formGroup = self.extraer(command, pattern);
+                        formGroup = formGroup.map(function(x){ return x.substr(1); });
+                        self.removeItemFromArr(formGroup, "this");
+                        if(formGroup.length && formGroup.length > 0){
+                            if(formList != null){
+                                formGroup.map(function(elm) { if(!formList.includes(elm)){commandError++; $(`#comandos-${self._nameHTML} #${id}`).addClass("commandNotFound")}});
+                            }
+                        }
+                    }
+                }
+            }
+
+            return commandError == 0;
+        }
+
+        return /^[0-9a-zA-Z_-áéíóúÁÉÍÓÚñÑçÇ\s]{5,}$/.test(datos.name) && datos.requirements.length > 0 && /(?=.*\$name)(?=.{6,}$)/.test(datos.installCommand) && comprobarForms(datos.forms) && comprobarForms(datos.quick) && comprobarCommands(datos.commands, datos.forms);
     }
 
     /**
@@ -311,6 +386,7 @@ export class Interface {
      * 
      * @param {String} cadena Cadena de caracteres
      * @param {RegExp} extraer Expresión regular
+     * @return {Object} Coincidencias
      */
     extraer(cadena, extraer) {
         return cadena.match(extraer);
@@ -403,28 +479,34 @@ export class Interface {
                             selectedCommands[element.cmd] = label + "[@]" + value;
                     });
 
-                if (comandos != null)
+                if (comandos != null){
+                    const pattern = /(?:\%([^\s"']+))/g;
                     // Recorremos cada comando por orden y guardamos aquellos que vamos a usar
                     Object.assign(comandos).forEach(command => {
                         if (selectedCommands[command.DT_RowId]) {
-                            var comandSelected = selectedCommands[command.DT_RowId].split("[@]");
+                            let comandSelected = selectedCommands[command.DT_RowId].split("[@]");
 
-                            var comando = command.comando;
-                            var inputValue = self.extraer(comando, /%\w+/g);
+                            let comando = command.comando;
+                            let inputValue = self.extraer(comando, pattern);
 
-                            if (inputValue != null)
-                                switch (inputValue[0]) {
-                                    case '%this':
-                                        comando = comando.replace(new RegExp(/%this/g), comandSelected[1]);
-                                        break;
-                                    default:
-                                        comando = comando.replace(new RegExp(/%\w+/g), tempValues[inputValue[0].split('%')[1]]);
-                                }
+                            if (pattern.test(comando) && inputValue.length > 0){
+                                inputValue.map(function(x){ 
+                                    switch (x) {
+                                        case '%this':
+                                            comando = comando.replace(new RegExp(/%this/g), comandSelected[1]);
+                                            break;
+                                        default:
+                                            comando = comando.replace(x, tempValues[x.split('%')[1]]);
+                                    }
+                                 });
+                            }
+                                 
                             commandsToDo.comandos[comandSelected[0]] = comando;
                         }
                     });
+                }
 
-                var datos = {
+                const datos = {
                     'commands': commandsToDo
                 };
 
@@ -441,6 +523,20 @@ export class Interface {
         }
 
         return exec;
+    }
+
+    /**
+     * Elimina un elemento del array
+     * 
+     * @param {Array} arr Array
+     * @param {String} item Elemento
+     */
+    removeItemFromArr ( arr, item ) {
+        var i = arr.indexOf( item );
+     
+        if ( i !== -1 ) {
+            arr.splice( i, 1 );
+        }
     }
 
     /**
@@ -583,7 +679,7 @@ export class Interface {
 
             var textColor = color == null ? "" : " text-" + color;
             var atributos = {
-                "class": "toast ",
+                "class": "toast ml-auto ",
                 "data-delay": "4000",
                 "role": "alert",
                 "aria-live": "assertive",
