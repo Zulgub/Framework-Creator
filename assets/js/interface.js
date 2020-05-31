@@ -220,8 +220,11 @@ export class Interface {
 
     activateLink(){
         const path = window.location.pathname.split("/");
-        this.removeItemFromArr(path, "");      
-        $('a[activeLink]').toArray().map(function(x){if($(x).attr("href").indexOf(path[path.length - 1]) != -1){ $(x).addClass($(x).attr('activeLink')) }});
+        this.removeItemFromArr(path, "");
+        if(path.length == 1)
+            $('a[activeLink][href="."]').addClass($('a[activeLink][href="."]').attr('activeLink'))
+        else
+            $('a[activeLink]').toArray().map(function(x){if($(x).attr("href").indexOf(path[path.length - 1]) != -1){ $(x).addClass($(x).attr('activeLink')) }});
     }
 
     /**
