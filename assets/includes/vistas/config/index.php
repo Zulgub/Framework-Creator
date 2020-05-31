@@ -1,5 +1,5 @@
 @capa("default")
-@addTitle(" - configuración")
+@addTitle("configuración")
 @addCss("assets/css/tableEditor/"=>["datatables.min.css","generator-base.css","editor.bootstrap4.min.css","jquery.dataTables.min.css","rowReorder.dataTables.min.css"])
 @addJs("assets/js/tableEditor/"=>["jquery.dataTables.min.js","dataTables.rowReorder.min.js","datatables.min.js","dataTables.editor.min.js","editor.bootstrap4.min.js"], "assets/js/forms/"=>["form-builder.min.js"])
 <div class="row p-0">

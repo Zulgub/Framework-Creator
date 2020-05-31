@@ -168,7 +168,7 @@ class Vista
 
                 // Añade el título de la vista
                 if ($addTitle)
-                    $capa = preg_replace('/<title>([^<]+)<\/title>/', "<title>$1{$addTitle}</title>", $capa);
+                    $capa = preg_replace('/<title>([^<]+)<\/title>/', "<title>$1 | {$addTitle}</title>", $capa);
 
                 // Añade ficheros css
                 $css = "";

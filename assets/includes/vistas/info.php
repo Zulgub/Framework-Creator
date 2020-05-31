@@ -1,8 +1,8 @@
 @capa("default")
-@addTitle(" - Información")
+@addTitle("Información")
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title"><?php echo $GLOBALS["name"]; ?></h4>
+        <h4 class="card-title logo logo-original"></h4>
         <p class="card-text">
             <div class="badge badge-warning p-2">Versión: <span class="text-white">0.0.4 βeta</span></div>
             <a class="badge badge-secondary p-2" target="_blank" href="https://github.com/juanjo96Dev/Framework-Manager"><i class="fab fa-github"></i> Github Repository</a>

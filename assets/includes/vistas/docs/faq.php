@@ -1,5 +1,5 @@
 @capa("default")
-@addTitle(" | Preguntas frequentes")
+@addTitle("Preguntas frequentes")
 @addCss("assets/css/"=>["faq.css"])
 <div class="container faq">
     <div class="row">

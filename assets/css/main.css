@@ -160,6 +160,12 @@ body {
   filter: invert(100%);
 }
 
+.logo.logo-original{
+  filter: none;
+  width: 16rem;
+  height: 10rem;
+}
+
 .img-project:after {
   content: "\f013";
   font-family: "Font Awesome 5 Free";

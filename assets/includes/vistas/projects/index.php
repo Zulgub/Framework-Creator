@@ -1,5 +1,5 @@
 @capa("project")
-@addTitle(" - <?php echo $get["name"]; ?>")
+@addTitle("<?php echo $get["name"]; ?>")
 <div class="row" id="setting-content">
   <div class="col-12">
     <div class="tab-content" id="v-pills-tabContent">

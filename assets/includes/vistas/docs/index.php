@@ -1,5 +1,5 @@
 @capa("default")
-@addTitle(" - Documentación")
+@addTitle("Documentación")
 <div class="row">
     <div class="col-xl-3">
         <div class="sticky-top">
