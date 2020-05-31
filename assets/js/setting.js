@@ -45,6 +45,7 @@ export class Setting {
 
         interfaz.waitUntilElement(`#${element}-exec`, function () {
             $(`#${element}-exec`).click(function () {
+                const button = $(this);
                 var valor = "";
                 // Tipos de editor
                 switch (type) {
@@ -58,7 +59,7 @@ export class Setting {
                         valor = $(`#${element}`).val();
                 }
                 if (patron != null && new RegExp(patron).test(valor) || patron == null)
-                    self.execCode(command, valor, nameCommand);
+                    self.execCode(command, valor, nameCommand, button);
             });
         });
     }
@@ -68,8 +69,9 @@ export class Setting {
      * @param {String} comamandID Comando a ejecutar
      * @param {String} value Contenido del comando
      * @param {String} nameCommand Nombre del comando
+     * @param {Object} button Botón
      */
-    execCode(comamandID, value, nameCommand) {
+    execCode(comamandID, value, nameCommand, button) {
         var nameCommand = nameCommand.replace(/<\/?br>/g, "");
         var comandos = this._datos.commands != null ? this._datos.commands : null;
         var comando;
@@ -94,13 +96,15 @@ export class Setting {
             }
         }
 
-        interfaz.alerta("spinner fa-spin", "Ejecución", `Ejecutando: ${nameCommand}`, "primary");
+        const content = button.html();
+        button.html('Ejecutando...').prop('disabled', true);
 
         interfaz.ajax('assets/includes/class/runCode.php', datos, 'post', 'json', function (data) {
             if (data)
                 interfaz.alerta("info", "Finalizado", "La ejecución de " + nameCommand + " ha finalizado", "success");
             else
                 interfaz.alerta("exclamation-triangle", "Error", "Error al ejecutar \"" + nameCommand + "\"", "danger", false);
+            button.html(content).prop('disabled', false);
         }, function (datos) {
             interfaz.alerta("exclamation-triangle", "Error", "Error al ejecutar \"" + nameCommand + "\"", "danger", false);
         });
@@ -219,7 +223,8 @@ export class Setting {
                     if (element.type == "button") {
                         interfaz.waitUntilElement(`#${name}`, function () {
                             $(`#${name}`).click(function () {
-                                self.execCode(comando, null, label);
+                                const button = $(this);
+                                self.execCode(comando, null, label, button);
                             });
                         });
                     } else {
@@ -352,7 +357,9 @@ export class Setting {
                                         $('[data-toggle="tooltip"]').tooltip();
 
                                         $(".save-file").off().click(function () {
-                                            interfaz.alerta("spinner fa-spin", "Guardando", "Guardando archivo...", "primary");
+                                            $(this).html("Guardando archivo...").prop("disabled",true);
+
+                                            const button = $(this);
 
                                             interfaz.ajax("common", {
                                                 api: "saveFileProject",
@@ -364,6 +371,8 @@ export class Setting {
                                                     setDate();
                                                 } else
                                                     interfaz.alerta("triangle-exclamation", "Error", "Error al guardar el archivo", "danger", false);
+
+                                                    button.html("Guardar").prop("disabled",false);
                                             }, function (datos) {
                                                 interfaz.alerta("triangle-exclamation", "Error", "Error al guardar el archivo", "danger", false);
                                             });

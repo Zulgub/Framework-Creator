@@ -241,6 +241,7 @@ export class Frameworks {
                                 ¡Debe incluir al menos un requisito!
                             </div>
                             <div class="text-muted">Para comprobar si tenemos instaladas las dependencias, lo averiguaremos por el comando de versión.</div>
+                            <a href="${interfaz.fixRoot('faq#problemCommands')}" target="_blank" class="faq"><i class="fa fa-external-link-alt"></i> ¿Funciona el comando en la terminal y en la aplicación <strong>no</strong>?</a>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -308,6 +309,7 @@ export class Frameworks {
                         </tr>
                     </thead>
                 </table>
+                <a href="${interfaz.fixRoot('faq#problemCommands')}" target="_blank" class="faq"><i class="fa fa-external-link-alt"></i> ¿Funciona el comando en la terminal y en la aplicación <strong>no</strong>?</a>
             </div>
             <div class="tab-pane p-2 fade" id="${this._nameHTML}-quick" role="tabpanel">
                 <div class="lds-spinner d-block mx-auto">

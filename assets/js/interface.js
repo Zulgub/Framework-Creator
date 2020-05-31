@@ -36,6 +36,19 @@ export class Interface {
 
         this.activateLink();
 
+        // Hace focus al faq del hash
+        if($('.faq').length > 0){
+            const hash = window.location.hash;
+		    if(hash){
+                const target = $(`button[data-hash="${hash.split('#')[1]}"]`);
+                if(target.length > 0) {            
+                    $(`a[href="#tab${$(target).data('target').split('-')[2]}"]`).click();                  
+                    if(!$(target.data('target')).hasClass('show'))
+                        target.click();
+                }
+		    }
+        }
+
         Push.Permission.request(null, function () {
             self.modal("Permitir notificaciones", "Permite a este sitio que te envíe notificaciones cuando no estés en la web", "Aceptar", null, null, true);
         });
@@ -59,7 +72,8 @@ export class Interface {
                         select += `<option>${op}</option>`
                     });
 
-                    self.modal("Nuevo proyecto", `<label class="form-label row p-4">Seleccione un framework: ${select}</select></label><div class="invalid-feedback">¡Debes selecionar un framework!</div>`, "Siguiente", function () {
+                    self.modal("Nuevo proyecto", `<label class="form-label row p-4">Seleccione un framework: ${select}</select></label><div class="invalid-feedback">¡Debes selecionar un framework!</div>
+                    <a href="${self.fixRoot('faq#installError')}" target="_blank" class="faq"><i class="fa fa-external-link-alt"></i> ¿Creación incompleta? ¿Errores al crear?</a>`, "Siguiente", function () {
                         var parent = $(".modal-content");
                         var selected = $("#frameSelected").val();
                         parent.find(".invalid-feedback").hide();

@@ -1,76 +1,98 @@
 @capa("default")
 @addTitle(" | Preguntas frequentes")
-<section class="accordion-section clearfix mt-3" aria-label="Question Accordions">
-  <div class="container">
-  
-	  <h2>Preguntas frecuentes </h2>
-	  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		<div class="panel panel-default">
-		  <div class="panel-heading p-3 mb-3" role="tab" id="heading0">
-			<h3 class="panel-title">
-			  <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse0" aria-expanded="true" aria-controls="collapse0">
-				What are the benefits of Solodev CMS?
-			  </a>
-			</h3>
-		  </div>
-		  <div id="collapse0" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading0">
-			<div class="panel-body px-3 mb-4">
-			  <p>With Solodev CMS, you and your visitors will benefit from a finely-tuned technology stack that drives the highest levels of site performance, speed and engagement - and contributes more to your bottom line. Our users fell in love with:</p>
-			  <ul>
-				<li>Light speed deployment on the most secure and stable cloud infrastructure available on the market.</li>
-				<li>Scalability – pay for what you need today and add-on options as you grow.</li>
-				<li>All of the bells and whistles of other enterprise CMS options but without the design limitations - this CMS simply lets you realize your creative visions.</li>
-				<li>Amazing support backed by a team of Solodev pros – here when you need them.</li>
-			  </ul>
-			</div>
-		  </div>
-		</div>
-		
-		<div class="panel panel-default">
-		  <div class="panel-heading p-3 mb-3" role="tab" id="heading1">
-			<h3 class="panel-title">
-			  <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="true" aria-controls="collapse1">
-				How easy is it to build a website with Solodev CMS?
-			  </a>
-			</h3>
-		  </div>
-		  <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
-			<div class="panel-body px-3 mb-4">
-			  <p>Building a website is extremely easy. With a working knowledge of HTML and CSS you will be able to have a site up and running in no time.</p>
-			</div>
-		  </div>
-		</div>
-		
-		<div class="panel panel-default">
-		  <div class="panel-heading p-3 mb-3" role="tab" id="heading2">
-			<h3 class="panel-title">
-			  <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
-				What is the uptime for Solodev CMS?
-			  </a>
-			</h3>
-		  </div>
-		  <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
-			<div class="panel-body px-3 mb-4">
-			  <p>Using Amazon AWS technology which is an industry leader for reliability you will be able to experience an uptime in the vicinity of 99.95%.</p>
-			</div>
-		  </div>
-		</div>
-		
-		<div class="panel panel-default">
-		  <div class="panel-heading p-3 mb-3" role="tab" id="heading3">
-			<h3 class="panel-title">
-			  <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
-				Can Solodev CMS handle multiple websites for my company?
-			  </a>
-			</h3>
-		  </div>
-		  <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
-			<div class="panel-body px-3 mb-4">
-			  <p>Yes, Solodev CMS is built to handle the needs of any size company. With our Multi-Site Management, you will be able to easily manage all of your websites.</p>
-			</div>
-		  </div>
-		</div>
-	  </div>
-  
-  </div>
-</section>
+@addCss("assets/css/"=>["faq.css"])
+<div class="container faq">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="nav nav-pills faq-nav" id="faq-tabs" role="tablist" aria-orientation="vertical">
+                <a href="#tab1" class="nav-link active" data-toggle="pill" role="tab" aria-controls="tab1" aria-selected="true">
+                    <i class="fa fa-question-circle mr-2"></i> Preguntas y respuestas frecuentes
+                </a>
+                <a href="#tab2" class="nav-link" data-toggle="pill" role="tab" aria-controls="tab2" aria-selected="false">
+                    <i class="fa fa-cogs mr-2"></i> Configuración
+                </a>
+                <a href="#tab3" class="nav-link" data-toggle="pill" role="tab" aria-controls="tab3" aria-selected="false">
+                    <i class="fa fa-hdd mr-2"></i> Instalación
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="tab-content" id="faq-tab-content">
+                <div class="tab-pane show active" id="tab1" role="tabpanel" aria-labelledby="tab1">
+                    <div class="accordion" id="accordion-tab-1">
+                        <div class="card">
+                            <div class="card-header" id="accordion-tab-1-heading-1">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-1-content-1" aria-expanded="false" aria-controls="accordion-tab-1-content-1">¿Puedo usar cualquier framework?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse show" id="accordion-tab-1-content-1" aria-labelledby="accordion-tab-1-heading-1" data-parent="#accordion-tab-1">
+                                <div class="card-body">
+									<p>No, sólo aquellos que no necesiten intervención durante la instalación o dispongan de opción de una instalación silenciosa, como en el caso de composer con <abbr title="Do not ask any interactive question"><a href="https://getcomposer.org/doc/03-cli.md#global-options" target="_blank" rel="nofollow">-n</a></abbr>
+									<br>Por ejemplo, <i class="fab fa-angular"></i> Angular CLI no es compatible con esta aplicación.
+								</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab2" role="tabpanel" aria-labelledby="tab2">
+                    <div class="accordion" id="accordion-tab-2">
+                        <div class="card">
+                            <div class="card-header" id="accordion-tab-2-heading-1">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-2-content-1" aria-expanded="false" aria-controls="accordion-tab-2-content-1" data-hash="problemCommands"> Me funciona el comando en la terminal y en la aplicación no. ¿A que se debe?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse show" id="accordion-tab-2-content-1" aria-labelledby="accordion-tab-2-heading-1" data-parent="#accordion-tab-2">
+                                <div class="card-body">
+                                    <p>Asegurese que el comando que desea usar es accesible de manera global. Reinicie su dispositivo y pruebe de nuevo. Si el problema persiste, entonces PHP CLI no puede acceder a dicho comando</p>
+                                </div>
+                            </div>
+						</div>
+						<div class="card">
+                            <div class="card-header" id="accordion-tab-2-heading-2">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-2-content-2" aria-expanded="false" aria-controls="accordion-tab-2-content-1" data-hash="installCommand"> No me ejecuta el comando de instalación del framework. ¿Por qué?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse" id="accordion-tab-2-content-2" aria-labelledby="accordion-tab-2-heading-2" data-parent="#accordion-tab-2">
+                                <div class="card-body">
+                                    <p>Sólo se podrán ejecutar comandos de instalación en los que no se require intervención humana. Por ejemplo decidir si usar una librería o no. Busca en la documentación del Framework si existe una instalación silenciosa. Además, compruebe que el comando es accesible globalmente y si PHP CLI puede acceder a dicho comando. Reinicie el dispositivo y pruebe de nuevo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab3" role="tabpanel" aria-labelledby="tab3">
+                    <div class="accordion" id="accordion-tab-3">
+                        <div class="card">
+                            <div class="card-header" id="accordion-tab-3-heading-1">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-3-content-1" aria-expanded="false" aria-controls="accordion-tab-3-content-1" data-hash="installError">¿Por qué no se instala bien el proyecto?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse show" id="accordion-tab-3-content-1" aria-labelledby="accordion-tab-3-heading-1" data-parent="#accordion-tab-3">
+                                <div class="card-body">
+                                    <p>A veces es problema del caché del comando que estés ejecutando o comprueba si es necesario tener acceso a internet para que descargue cierta dependencia.<br>Pruebe a ejecutar el comando de borrado de caché del comando que necesite usar para la instalación.<br><strong>En la mayoría de los casos, tras borrar caché, se volverán a descargar las dependencias desde internet.</strong></p>
+                                </div>
+                            </div>
+						</div>
+						<div class="card">
+                            <div class="card-header" id="accordion-tab-3-heading-2">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-3-content-2" aria-expanded="false" aria-controls="accordion-tab-3-content-1" data-hash="requirements">He instalado los requisitos del framework, pero sigue saliendome el error. ¿Por qué?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse" id="accordion-tab-3-content-2" aria-labelledby="accordion-tab-3-heading-2" data-parent="#accordion-tab-3">
+                                <div class="card-body">
+                                    <p>Si acabas de instalar los requisitos, comprueba que es accesible de forma global, borra el caché del navegador y vuelva a intentarlo.<br>Si el problema aún persiste, reinicie el dispositivo. Si esto aún no lo soluciona, compruebe que PHP CLI pueda acceder a dicho comando.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
