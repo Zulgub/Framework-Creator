@@ -14,6 +14,9 @@
                 <a href="#tab3" class="nav-link" data-toggle="pill" role="tab" aria-controls="tab3" aria-selected="false">
                     <i class="fa fa-hdd mr-2"></i> Instalación
                 </a>
+                <a href="#tab4" class="nav-link" data-toggle="pill" role="tab" aria-controls="tab4" aria-selected="false">
+                    <i class="fa fa-tasks mr-2"></i> Proyecto
+                </a>
             </div>
         </div>
         <div class="col-lg-8">
@@ -87,6 +90,27 @@
                             <div class="collapse" id="accordion-tab-3-content-2" aria-labelledby="accordion-tab-3-heading-2" data-parent="#accordion-tab-3">
                                 <div class="card-body">
                                     <p>Si acabas de instalar los requisitos, comprueba que es accesible de forma global, borra el caché del navegador y vuelva a intentarlo.<br>Si el problema aún persiste, reinicie el dispositivo. Si esto aún no lo soluciona, compruebe que PHP CLI pueda acceder a dicho comando.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab4" role="tabpanel" aria-labelledby="tab4">
+                    <div class="accordion" id="accordion-tab-4">
+                        <div class="card">
+                            <div class="card-header" id="accordion-tab-4-heading-1">
+                                <h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion-tab-4-content-1" aria-expanded="false" aria-controls="accordion-tab-1-content-1">Me aparece error 404 Proyecto no detectado. ¿Por qué no detecta mi proyecto?</button>
+                                </h5>
+                            </div>
+                            <div class="collapse show" id="accordion-tab-4-content-1" aria-labelledby="accordion-tab-4-heading-1" data-parent="#accordion-tab-1">
+                                <div class="card-body">
+                                    <p>Es necesario tener un archivo de texto llamado <strong>project-info.txt</strong> en la raiz del proyecto con la siguiente estructura:
+                                    <code class="d-block p-2">
+                                        name=nombre del proyecto<br>
+                                        framework=nombre del framework
+                                    </code>
+								</p>
                                 </div>
                             </div>
                         </div>
