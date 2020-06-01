@@ -383,7 +383,7 @@ export class Frameworks {
         var reader = new FileReader();
         reader.onerror = this.errorHandler;
         reader.onloadstart = function (e) {
-            $("#readJSON").html('Leyendo archivo <i clas="fa fa-spinner fa-spin"></i>');
+            $("#readJSON").html('Leyendo archivo <i class="fa fa-spinner fa-spin"></i>');
         };
 
         reader.onload = function (e) {

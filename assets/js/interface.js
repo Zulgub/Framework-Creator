@@ -255,7 +255,7 @@ export class Interface {
         var reader = new FileReader();
         reader.onerror = this.errorHandler;
         reader.onloadstart = function (e) {
-            $("#projectsUpload").html('Subiendo proyecto <i clas="fa fa-spinner fa-spin"></i>');
+            $("#readProject").html('Cargando proyecto <i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
         };
 
         reader.onload = function (e) {
@@ -263,21 +263,27 @@ export class Interface {
             var ext = fileName.split(".");
             ext = ext[ext.length - 1];
             if (ext == 'zip') {
-                var formData = new FormData();
-                formData.append('project', $("#projectsUpload")[0].files[0]);
-                self.ajax("common", {
-                    api: "uploadProject",
-                    project: formData
-                }, "post", "json", function (datos) {
-                    console.info(datos);
+                let formData = new FormData();
+                formData.append('project', ($(evt.target).length > 0 ? $(evt.target)[0].files[0] : null));
+                self.ajax("assets/includes/class/runCode.php", formData, "POST", "JSON", function (datos) {
+                    if (datos == 0 || datos == 3) {
+                        self.alerta("exclamation-triangle", "Error", "Error al subir el proyecto", "danger", false);
+                    } else if (datos == 1) {
+                        self.alerta("exclamation-triangle", "Error", "Sólo se permiten archivos con extensión Zip", "danger", false);
+                    } else {
+                        self.listProject();
+                        self.alerta("file-upload", "Proyecto cargado", "Se ha cargado el proyecto: " + fileName, "success", false);
+                    }
+
+                    $("#readProject").html('<i class="fa fa-file-upload"></i> Cargar proyecto').prop('disabled', false);
+
                 }, function (datos) {
-                    console.error(datos)
+                    $("#readProject").html('<i class="fa fa-file-upload"></i> Cargar proyecto').prop('disabled', false);
+                    self.alerta("exclamation-triangle", "Error", "Error al subir el proyecto", "danger", false);
                 }, true);
             } else {
                 self.alerta("exclamation-triangle", "Error", "Sólo se permiten archivos con extensión Zip", "danger", false);
             }
-
-            $("#projectsUpload").html('<i class="fa fa-file-upload"></i> Cargar proyecto');
         }
 
         reader.readAsText(evt.target.files.item(0));
@@ -937,7 +943,7 @@ export class Interface {
             config.data = data;
         if (type != null)
             config.type = type;
-        if (file){
+        if (file) {
             config.processData = false;
             config.contentType = false;
         }

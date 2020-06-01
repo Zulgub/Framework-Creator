@@ -19,7 +19,7 @@
                                     <button class="btn btn-success newProject" data-toggle="modal" data-target="#modal"><i class="fa fa-plus"></i> Nuevo</button>
                                     <button class="btn btn-primary" id="actualizarProyectos"><i class="fa fa-sync"></i> Actualizar</button>
                                 </div>
-                                <input type="file" id="projectsUpload" class="d-none" name="projectsUpload"/>
+                                <input type="file" id="projectsUpload" class="d-none" name="projectsUpload" />
                             </div>
                         </div>
                     </div>

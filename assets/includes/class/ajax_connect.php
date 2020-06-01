@@ -66,11 +66,6 @@ class Ajax_connect
                     $get = $GLOBALS["app"]->saveFileProject($_POST["dir"], $_POST["contenido"]);
                 $resultado = $get;
                 break;
-            case 'uploadProject':
-                if(isset($_POST["project"]))
-                    $get = $GLOBALS["app"]->projectsUpload($_POST["project"]);
-                $resultado = $get;
-                break;
             default:
                 $resultado = null;
                 break;
