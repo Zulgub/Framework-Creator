@@ -36,17 +36,22 @@ export class Interface {
 
         this.activateLink();
 
+        // Cargamos los proyectos
+        $("#projectsUpload").off().on("change", function (e) {
+            self.handleFileSelect(e);
+        });
+
         // Hace focus al faq del hash
-        if($('.faq').length > 0){
+        if ($('.faq').length > 0) {
             const hash = window.location.hash;
-		    if(hash){
+            if (hash) {
                 const target = $(`button[data-hash="${hash.split('#')[1]}"]`);
-                if(target.length > 0) {            
-                    $(`a[href="#tab${$(target).data('target').split('-')[2]}"]`).click();                  
-                    if(!$(target.data('target')).hasClass('show'))
+                if (target.length > 0) {
+                    $(`a[href="#tab${$(target).data('target').split('-')[2]}"]`).click();
+                    if (!$(target.data('target')).hasClass('show'))
                         target.click();
                 }
-		    }
+            }
         }
 
         Push.Permission.request(null, function () {
@@ -65,7 +70,7 @@ export class Interface {
         }
 
         $(".newProject").click(function () {
-            self.getFrameList(true, function (list) {              
+            self.getFrameList(true, function (list) {
                 if (list.length > 0) {
                     var select = '<select class="form-control" id="frameSelected"><option value="">Seleccione un framework</option>';
                     list.forEach(op => {
@@ -156,7 +161,7 @@ export class Interface {
 
                                     self.ajax(`assets/includes/vistas/config/frameworks/${self.ucFirst(selected)}.json`, null, null, undefined, function (datos) {
                                         self.waitUntilElement(".modal-body", function () {
-                                            if(self.checkErrors(datos)){
+                                            if (self.checkErrors(datos)) {
                                                 self._comands = self.doCommands(datos, self.ucFirst(selected));
                                                 if (datos.forms && datos.commands)
                                                     self.setFixedRender(".modal-body", datos.forms);
@@ -218,13 +223,77 @@ export class Interface {
         });
     }
 
-    activateLink(){
+    /**
+     * Indica un error del archivo subido
+     * 
+     * @param {Event} evt Evento
+     */
+    errorHandler(evt) {
+        var msg = "";
+        switch (evt.target.error.code) {
+            case evt.target.error.NOT_FOUND_ERR:
+                msg = "Archivo no encontrado";
+                break;
+            case evt.target.error.NOT_READABLE_ERR:
+                msg = "No se puede leer el archivo";
+                break;
+            default:
+                msg = "Ocurrió un error al leer el archivo";
+        };
+
+        this.alerta("exclamation-triangle", "Error", msg, "danger", false);
+    }
+
+
+    /**
+     * Lee el archivo
+     * 
+     * @param {Event} evt Evento
+     */
+    handleFileSelect(evt) {
+        const self = this;
+        var reader = new FileReader();
+        reader.onerror = this.errorHandler;
+        reader.onloadstart = function (e) {
+            $("#projectsUpload").html('Subiendo proyecto <i clas="fa fa-spinner fa-spin"></i>');
+        };
+
+        reader.onload = function (e) {
+            var fileName = $(evt.target).val().replace("C:\\fakepath\\", "");
+            var ext = fileName.split(".");
+            ext = ext[ext.length - 1];
+            if (ext == 'zip') {
+                var formData = new FormData();
+                formData.append('project', $("#projectsUpload")[0].files[0]);
+                self.ajax("common", {
+                    api: "uploadProject",
+                    project: formData
+                }, "post", "json", function (datos) {
+                    console.info(datos);
+                }, function (datos) {
+                    console.error(datos)
+                }, true);
+            } else {
+                self.alerta("exclamation-triangle", "Error", "Sólo se permiten archivos con extensión Zip", "danger", false);
+            }
+
+            $("#projectsUpload").html('<i class="fa fa-file-upload"></i> Cargar proyecto');
+        }
+
+        reader.readAsText(evt.target.files.item(0));
+    }
+
+    activateLink() {
         const path = window.location.pathname.split("/");
         this.removeItemFromArr(path, "");
-        if(path.length == 1)
+        if (path.length == 1)
             $('a[activeLink][href="."]').addClass($('a[activeLink][href="."]').attr('activeLink'))
         else
-            $('a[activeLink]').toArray().map(function(x){if($(x).attr("href").indexOf(path[path.length - 1]) != -1){ $(x).addClass($(x).attr('activeLink')) }});
+            $('a[activeLink]').toArray().map(function (x) {
+                if ($(x).attr("href").indexOf(path[path.length - 1]) != -1) {
+                    $(x).addClass($(x).attr('activeLink'))
+                }
+            });
     }
 
     /**
@@ -233,12 +302,14 @@ export class Interface {
      * @param {JSON} datos del framework 
      * @return {Boolean} Estado de la comprobación
      */
-    checkErrors(datos){
+    checkErrors(datos) {
         const self = this;
 
         const commands = datos.commands;
 
-        const commandsIds = commands != null ? commands.map(function(x){ return x.DT_RowId}) : null;
+        const commandsIds = commands != null ? commands.map(function (x) {
+            return x.DT_RowId
+        }) : null;
 
         /**
          * Comprueba el editor de formularios
@@ -270,24 +341,33 @@ export class Interface {
          * @param {string} formList Formulario
          * @return {Boolean} Estado de la comprobación
          */
-        function comprobarCommands(commands, formList = null){
+        function comprobarCommands(commands, formList = null) {
 
-            formList = formList != null ? JSON.parse(atob(formList)).map(form => {return form.name;}) : null;
+            formList = formList != null ? JSON.parse(atob(formList)).map(form => {
+                return form.name;
+            }) : null;
 
             const pattern = /(?:\%([^\s'"]+))/g;
             let commandError = 0;
-            if(commands != undefined){
+            if (commands != undefined) {
                 for (let index = 0; index < commands.length; index++) {
-                    const now = commands[index];                    
+                    const now = commands[index];
                     const command = now.comando;
                     const id = now.DT_RowId;
                     if (pattern.test(command)) {
                         let formGroup = self.extraer(command, pattern);
-                        formGroup = formGroup.map(function(x){ return x.substr(1); });
+                        formGroup = formGroup.map(function (x) {
+                            return x.substr(1);
+                        });
                         self.removeItemFromArr(formGroup, "this");
-                        if(formGroup.length && formGroup.length > 0){
-                            if(formList != null){
-                                formGroup.map(function(elm) { if(!formList.includes(elm)){commandError++; $(`#comandos-${self._nameHTML} #${id}`).addClass("commandNotFound")}});
+                        if (formGroup.length && formGroup.length > 0) {
+                            if (formList != null) {
+                                formGroup.map(function (elm) {
+                                    if (!formList.includes(elm)) {
+                                        commandError++;
+                                        $(`#comandos-${self._nameHTML} #${id}`).addClass("commandNotFound")
+                                    }
+                                });
                             }
                         }
                     }
@@ -503,7 +583,7 @@ export class Interface {
                             selectedCommands[element.cmd] = label + "[@]" + value;
                     });
 
-                if (comandos != null){
+                if (comandos != null) {
                     const pattern = /(?:\%([^\s"']+))/g;
                     // Recorremos cada comando por orden y guardamos aquellos que vamos a usar
                     Object.assign(comandos).forEach(command => {
@@ -513,8 +593,8 @@ export class Interface {
                             let comando = command.comando;
                             let inputValue = self.extraer(comando, pattern);
 
-                            if (pattern.test(comando) && inputValue.length > 0){
-                                inputValue.map(function(x){ 
+                            if (pattern.test(comando) && inputValue.length > 0) {
+                                inputValue.map(function (x) {
                                     switch (x) {
                                         case '%this':
                                             comando = comando.replace(new RegExp(/%this/g), comandSelected[1]);
@@ -522,9 +602,9 @@ export class Interface {
                                         default:
                                             comando = comando.replace(x, tempValues[x.split('%')[1]]);
                                     }
-                                 });
+                                });
                             }
-                                 
+
                             commandsToDo.comandos[comandSelected[0]] = comando;
                         }
                     });
@@ -555,13 +635,13 @@ export class Interface {
      * @param {Array} arr Array
      * @param {String} item Elemento
      */
-    removeItemFromArr ( arr, item ) {
-        do{
-            var i = arr.indexOf( item );
-            if ( i !== -1 ) {
-                arr.splice( i, 1 );
+    removeItemFromArr(arr, item) {
+        do {
+            var i = arr.indexOf(item);
+            if (i !== -1) {
+                arr.splice(i, 1);
             }
-        }while(i !== -1);
+        } while (i !== -1);
     }
 
     /**
@@ -830,8 +910,9 @@ export class Interface {
      * @param {String} dataType Tipo de datos recibidos
      * @param {Function} success Ejecutar en caso de éxito
      * @param {Function} error Ejecutar en caso de error
+     * @param {Boolean} file Indica si carga un archivo
      */
-    ajax(url = "common", data = null, type = 'post', dataType = 'json', success = null, error = null) {
+    ajax(url = "common", data = null, type = 'post', dataType = 'json', success = null, error = null, file = false) {
 
         // Area de intercambio de información común
         if (url == "common")
@@ -856,6 +937,10 @@ export class Interface {
             config.data = data;
         if (type != null)
             config.type = type;
+        if (file){
+            config.processData = false;
+            config.contentType = false;
+        }
 
         $.ajax(config);
     }

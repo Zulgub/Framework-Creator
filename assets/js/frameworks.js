@@ -199,8 +199,9 @@ export class Frameworks {
         var install = this._datos.installCommand != undefined ? this._datos.installCommand : "";
         var root = this._datos.mainRoot != undefined ? this._datos.mainRoot : "";
 
+        active = active != "" ? "show "+active : "";
         // Contenido
-        var contenido = this._nameHTML == null && this._nameHTML == undefined ? `<div class=\"alert alert-danger w-100 text-center\">Hay un error grave en la estructura del archivo ${this._file}</div>` : `<div class="tab-pane ${active}" id="${this._nameHTML}" role="tabpanel" aria-labelledby="list-${this._nameHTML}-list">
+        var contenido = this._nameHTML == null && this._nameHTML == undefined ? `<div class=\"alert alert-danger w-100 text-center\">Hay un error grave en la estructura del archivo ${this._file}</div>` : `<div class="tab-pane fade ${active}" id="${this._nameHTML}" role="tabpanel" aria-labelledby="list-${this._nameHTML}-list">
         <div class="btn-group float-left" role="group" aria-label="Actions Buttons">
             <button class="btn btn-success save"><i class="fa fa-save"></i> Guardar</button>
             <a href="assets/includes/vistas/config/frameworks/${this._file}" download class="btn btn-warning"><i class="fa fa-download"></i> Descargar</a>
