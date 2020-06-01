@@ -201,8 +201,9 @@ export class Frameworks {
 
         // Contenido
         var contenido = this._nameHTML == null && this._nameHTML == undefined ? `<div class=\"alert alert-danger w-100 text-center\">Hay un error grave en la estructura del archivo ${this._file}</div>` : `<div class="tab-pane ${active}" id="${this._nameHTML}" role="tabpanel" aria-labelledby="list-${this._nameHTML}-list">
-        <div class="float-left">
+        <div class="btn-group float-left" role="group" aria-label="Actions Buttons">
             <button class="btn btn-success save"><i class="fa fa-save"></i> Guardar</button>
+            <a href="assets/includes/vistas/config/frameworks/${this._file}" download class="btn btn-warning"><i class="fa fa-download"></i> Descargar</a>
             <button class="btn btn-danger delete" data-toggle="modal" data-target="#modal"><i class="fa fa-trash"></i> Borrar</button>
         </div>
         <nav>
@@ -381,7 +382,7 @@ export class Frameworks {
         var reader = new FileReader();
         reader.onerror = this.errorHandler;
         reader.onloadstart = function (e) {
-            interfaz.alerta("spinner fa-spin", "Cargando", "Leyendo archivo", "success");
+            $("#readJSON").html('Leyendo archivo <i clas="fa fa-spinner fa-spin"></i>');
         };
 
         reader.onload = function (e) {
@@ -432,6 +433,8 @@ export class Frameworks {
                 interfaz.alerta("exclamation-triangle", "Error", "Sólo se permiten archivos con extensión JSON", "danger", false);
 
             }
+
+            $("#readJSON").html('<i class="fa fa-file-upload"></i> Cargar archivo de configuración ');
         }
 
         reader.readAsText(evt.target.files.item(0));

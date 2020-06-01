@@ -88,7 +88,7 @@ export class Interface {
                                         /**
                                          * Lista negra de nombre de carpetas en linux y windows
                                          * 
-                                         * Primera parte - Comprueba que el nombre no sea así
+                                         * Primera parte - Comprueba que el nombre no sea igual a los nombres indicados
                                          * Segunda parte - Comprueba que no exista esos caracteres en el nombre
                                          * Tercera parte - Comprueba que no termina en punto o espacio
                                          */
@@ -336,7 +336,7 @@ export class Interface {
                             // Mensaje de error
                             var errorMSG = `Error grave al cancelar la instalación.<br>Sigue estos pasos para evitar futuros errores:
                                 <ul>
-                                    <li>Compruebe que el proceso <strong>Php.exe</strong> no está activo</li>
+                                    <li>Compruebe que el proceso <strong>PHP CLI</strong> no está activo</li>
                                     <li>Revise que el archivo "assets/includes/installing/${datos[instalacion].name}_status.json" ha sido eliminado, en caso contrario, <strong>elimínelo</strong>.</li>
                                     <li>Revise que se ha eliminado la carpeta "projects/${datos[instalacion].name}", en caso contrario, <strong>elimínelo</strong>.</li>
                                 </ul>`;

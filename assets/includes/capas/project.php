@@ -126,7 +126,7 @@
             <div class="row pl-4">
                 <div class="col-md-6 my-1">
                     <h4 clasS="mb-0 project-name"><?php echo $get["name"]; ?></h4>
-                    <span data-toggle="tooltip" class="badge badge-warning p-2" data-placement="bottom" title="Framework"><i class="fa fa-puzzle-piece"></i> <?php echo $get["data"]["name"]; ?></span>
+                    <span data-toggle="tooltip" class="badge badge-warning p-2" data-placement="bottom" title="Framework"><i class="fa fa-puzzle-piece"></i> <?php echo isset($get["data"]["name"]) ? $get["data"]["name"] : "Unknown"; ?></span>
                     <span data-toggle="tooltip" class="badge badge-info p-2 size" data-placement="bottom" title="Tamaño del proyecto"><i class="fa fa-hdd"></i> Calculando... <i class="fa fa-spinner fa-spin"></i></span>
                     <button class="btn btn-secondary btn-sm p-1 descarga">
                         <i class="fa fa-download"></i> Descargar

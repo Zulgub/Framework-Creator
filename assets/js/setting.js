@@ -8,7 +8,7 @@ var interfaz = new Interface(false);
  * Clase del apartado de configuración de los proyectos
  */
 export class Setting {
-    
+
     /**
      * Constructor de la clase setting
      * 
@@ -17,16 +17,21 @@ export class Setting {
      */
     constructor(project, framework) {
         /**
-     * Indica el nombre del proyecto
-     */
+         * Indica el nombre del proyecto
+         */
         this._project = project;
         /**
-     * Indica el framework usado
-     */
+         * Indica el framework usado
+         */
         this._framework = framework;
+
         /**
-     * Datos del framework
-     */
+         * Nombre del framework formato HTML
+         */
+        this._frameworkHTML = framework.replace(' ', '_');
+        /**
+         * Datos del framework
+         */
         this._datos = null;
 
         this.loadModules();
@@ -178,7 +183,7 @@ export class Setting {
                 var project = $(this).data("project");
                 interfaz.modal("¿Desea borrar el proyecto?", "Perderás todo el contenido y no se podrá recuperar", "Borrar", function () {
                     interfaz.modal("Borrando...", 'Borrando proyecto <i class="fa fa-spinner fa-spin">');
-                    interfaz.waitUntilElement(".btn-danger", function(){
+                    interfaz.waitUntilElement(".btn-danger", function () {
                         $(".btn-danger").html("Cerrar");
                     });
                     interfaz.ajax("assets/includes/class/runCode.php", {
@@ -209,11 +214,12 @@ export class Setting {
      */
     funcionality() {
         var self = this;
+
         interfaz.ajax(`assets/includes/vistas/config/frameworks/${interfaz.ucFirst(this._framework)}.json`, null, null, undefined, function (datos) {
             self._datos = datos;
-            interfaz.setFixedRender(".quickContent", datos.quick);
 
-            if (datos.quick != null)
+            if (datos.quick != null){
+                interfaz.setFixedRender(".quickContent", datos.quick);
                 JSON.parse(atob(datos.quick)).forEach(element => {
 
                     var comando = element.cmd;
@@ -234,7 +240,7 @@ export class Setting {
 
                         self.btn(name, element.subtype, comando, label, element.pattern);
                     }
-                });
+                });}
 
             if (datos.files != null) {
                 var opciones = "";
@@ -357,7 +363,7 @@ export class Setting {
                                         $('[data-toggle="tooltip"]').tooltip();
 
                                         $(".save-file").off().click(function () {
-                                            $(this).html("Guardando archivo...").prop("disabled",true);
+                                            $(this).html("Guardando archivo...").prop("disabled", true);
 
                                             const button = $(this);
 
@@ -372,7 +378,7 @@ export class Setting {
                                                 } else
                                                     interfaz.alerta("triangle-exclamation", "Error", "Error al guardar el archivo", "danger", false);
 
-                                                    button.html("Guardar").prop("disabled",false);
+                                                button.html("Guardar").prop("disabled", false);
                                             }, function (datos) {
                                                 interfaz.alerta("triangle-exclamation", "Error", "Error al guardar el archivo", "danger", false);
                                             });
@@ -396,7 +402,7 @@ export class Setting {
                 });
             } else {
                 var list = "";
-                var msg = `No hay archivos de configuración asignados. <a href="${interfaz.fixRoot("config")}">¿Desea crearlos?</a>`;
+                var msg = `No hay archivos de configuración asignados. <a href="${interfaz.fixRoot("config")}#${self._frameworkHTML}">¿Desea crearlos?</a>`;
             }
 
             $(".list-files").html(list);

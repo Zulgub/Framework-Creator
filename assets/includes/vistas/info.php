@@ -15,7 +15,7 @@
             <hr>
             Créditos
             <hr>
-            Logo: <a href="https://twitter.com/ddesinges">DDesing - Jose Alberto Galera Sánchez</a>
+            Logo: <a href="https://twitter.com/jagalerasanchez">Jose Alberto Galera Sánchez</a>
         </p>
     </div>
 </div>

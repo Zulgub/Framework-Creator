@@ -172,22 +172,38 @@ class Vista
 
                 // Añade ficheros css
                 $css = "";
+                $listNotFound = "";
                 foreach ($this::getArrayCongif($addCss) as $key => $value) {
                     $root = $this->assets($key);
+                    if(!file_exists($root))
+                        $this->error("404", "Ruta CSS no encontrada: $root");
+
                     for ($i = 0; $i < count($value); $i++) {
                         $css .= '<link rel="stylesheet" type="text/css" href="' . $root . $value[$i] . "\">\n";
+                        if(!file_exists($root.$value[$i]))
+                            $listNotFound .=  "<li>".$root.$value[$i]."</li>";
                     }
                 }
+                if($listNotFound !== "")
+                        $this->error("404", "archivos CSS no encontrados: <ul>$listNotFound</ul>");
                 $capa = preg_replace('/<!--\s*@css\s*-->/', $css, $capa);
 
                 // Añade ficheros js
                 $js = "";
+                $listNotFound = "";
                 foreach ($this::getArrayCongif($addJs) as $key => $value) {
                     $root = $this->assets($key);
+                    if(!file_exists($root))
+                        $this->error("404", "Ruta JS no encontrada: $root");
+                    
                     for ($i = 0; $i < count($value); $i++) {
                         $js .= '<script defer type="text/javascript" src="' . $root . $value[$i] . "\"></script>\n";
+                        if(!file_exists($root.$value[$i]))
+                            $listNotFound .=  "<li>".$root.$value[$i]."</li>";
                     }
                 }
+                if($listNotFound !== "")
+                    $this->error("404", "archivos JS no encontrados: <ul>$listNotFound</ul>");
                 $capa = preg_replace('/<!--\s*@js\s*-->/', $js, $capa);
 
                 $contenido = str_replace("@contenido", $contenido, $capa);
