@@ -402,7 +402,7 @@ export class Setting {
                 });
             } else {
                 var list = "";
-                var msg = `No hay archivos de configuración asignados. <a href="${interfaz.fixRoot("config")}#${self._frameworkHTML}">¿Desea crearlos?</a>`;
+                var msg = `No hay archivos de configuración asignados. <a href="${interfaz.fixRoot("config")}#${self._frameworkHTML}#files">¿Desea crearlos?</a>`;
             }
 
             $(".list-files").html(list);

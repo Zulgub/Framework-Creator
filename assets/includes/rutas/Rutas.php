@@ -34,6 +34,7 @@ $R->new('projects/{proyecto}/settings', function ($variables) {
         $data = $GLOBALS["app"]->getDataFramework($framework);
         $variables["data"] = $data;
         $variables["name"] = $name;
+        $variables["frameHTML"] = preg_replace('/\s/i', '_', $framework);
         new Vista('projects.index', $variables);
     } else {
         $vista = new Vista;

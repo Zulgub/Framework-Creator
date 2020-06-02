@@ -38,7 +38,7 @@
           <div class="card-header">Acceso rápido</div>
           <div class="card-body">
             <form class="quickContent">
-              <div class="alert alert-primary text-center">No hay creados botones de acceso rápido. <a href="{{assets(config)}}<?php echo "#".$get["data"]["name"];?>">¿Desea crearlos?</a></div>
+              <div class="alert alert-primary text-center">No hay creados botones de acceso rápido. <a href="{{assets(config)}}<?php echo "#".$get["frameHTML"];?>#quick">¿Desea crearlos?</a></div>
             </form>
           </div>
         </div>

@@ -1671,6 +1671,12 @@ if ($("#newFramework").length > 0) {
 
 // Selecciona el framework indicado
 if(window.location.hash){
-    const select = `#list-${window.location.hash.split('#')[1]}-list`;
+    const hash = window.location.hash.split('#');
+    const select = `#list-${hash[1]}-list`;
     interfaz.waitUntilElement(select, function(){$(select).click();});
+    if(hash[2]){
+        const select2 = `#${hash[1]}-${hash[2]}-tab`;
+        console.log((select2));
+        interfaz.waitUntilElement(select2, function(){$(select2).click();});
+    }
 }
