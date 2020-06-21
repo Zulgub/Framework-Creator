@@ -3,7 +3,7 @@
 #################### [ COMO USAR LAS RUTAS ] #########################
 /**
  * 
- * ¡¡¡ATENCIÓN!!! El orden es importante, si dos urls contienen parte del mismo principio, para diferenciarlas se debe poner primero el que más contenido tenga. Ejemplo:
+ * ¡¡¡ATENCIÓN!!! 
  * 
  * URL1: /usuario <- vista del perfil
  * URL2: /usuario/edit <- edición del perfil
