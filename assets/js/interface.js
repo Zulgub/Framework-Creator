@@ -717,6 +717,8 @@ export class Interface {
      * @param {String} buscar nombre del proyecto
      */
     searchProject(buscar = "") {
+        if ($("#projectlist .alert").length == 1)
+            $("#projectlist .alert").remove();
         if (buscar != "") {
             $(".project").addClass("d-none");
             $(`.project[data-name*="${buscar.toUpperCase()}"]`).removeClass("d-none");
@@ -728,8 +730,6 @@ export class Interface {
             }
         } else
             $(".project").removeClass("d-none");
-        if ($("#projectlist .alert").length == 0)
-            $("#projectlist .alert").remove();
     }
 
     /**

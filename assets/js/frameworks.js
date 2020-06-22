@@ -287,18 +287,18 @@ export class Frameworks {
                 </div>
             </div>
             <div class="tab-pane p-2 fade" id="${this._nameHTML}-commands" role="tabpanel">
-                <button class="btn btn-primary d-block mx-auto mb-3" data-toggle="collapse" data-target="#info"><i class="fa fa-question-circle"></i> Ayuda</button>
-                <div class="alert alert-primary collapse" id="info">
-                    <strong>Se debe usar comandos que no requieran intervención humana.<br>
-                    Ej: responder a una pregunta durante la ejecución</strong><br><br>
+                <button class="btn btn-primary d-block mx-auto mb-3" data-toggle="collapse" data-target="#info-commands"><i class="fa fa-question-circle"></i> Ayuda</button>
+                <div class="alert alert-primary collapse" id="info-commands">
+                    <strong>Se debe usar comandos que no requieran intervención humana.</strong><br>
+                    Ej: responder a una pregunta durante la ejecución</strong></br></br>
                     Para editar/borrar pulse sobre el área de la fila que desea editar/borrar (La columna orden no sirve).<br>
-                    Puede editar/borrar múltiples filas haciendo clic en sus áreas y manteniendo la tecla <strong>CTRL</strong> pulsada.<br>
-                    Puede editar/borrar múltiples filas consecutivas haciendo clic en sus áreas y manteniendo la tecla <strong>Mayus</strong> pulsada.<br>
-                    Los comandos se ejecutan según el orden a la hora de crear un nuevo proyecto.<br>
-                    Para ordenar los comandos tienes que hacer click sobre el número del orden, y arrastrar.<br>
+                    Puede editar/borrar múltiples filas haciendo clic en sus áreas y manteniendo la tecla <strong>CTRL</strong> pulsada.</br>
+                    Puede editar/borrar múltiples filas consecutivas haciendo clic en sus áreas y manteniendo la tecla <strong>Mayus</strong> pulsada.</br>
+                    Los comandos se ejecutan según el orden a la hora de crear un nuevo proyecto.</br>
+                    Para ordenar los comandos tienes que hacer click sobre el número del orden, y arrastrar.</br>
                     Formas de obtener valores:
                     <ul>
-                        <li>Valor de un input(Sólo editor de formulario): %<nombre del input>, ej: %frontend</li>
+                        <li>Valor de un input(Sólo editor de formulario): %[nombre del input], ej: %frontend</li>
                         <li>Valor del input que ejecuta dicho comando: %this</li>
                     </ul>
                 </div>
@@ -868,7 +868,7 @@ export class Frameworks {
 
             // Reseteanos las alertas
             $(`#${self._nameHTML}-${pill}-tab i`).remove();
-            $(`#${self._nameHTML}-${pill} .alert`).remove();
+            $(`#${self._nameHTML}-${pill} .alert-danger`).remove();
             $(`#${self._nameHTML}-${pill} .commandNotFound`).removeClass("commandNotFound");
 
             if (noEncontrados > 0) {
@@ -899,7 +899,7 @@ export class Frameworks {
 
         // Reset: Aleta de los comandos
         $(`#${this._nameHTML}-commands-tab i`).remove();
-        $(`#${self._nameHTML}-commands .alert`).remove();
+        $(`#${self._nameHTML}-commands .alert-danger`).remove();
         $(`#comandos-${self._nameHTML} .commandNotFound`).removeClass("commandNotFound");
 
         // Comandos: Comprobamos que existe el formulario del que recoge los datos
