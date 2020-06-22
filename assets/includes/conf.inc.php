@@ -13,7 +13,7 @@ $GLOBALS["name"] = "Framework Manager";
 $permisos = 0;
 require_once 'connect.inc.php';
 require_once 'class/app.php';
-$GLOBALS["version"] = "0.2.4 βeta";
+$GLOBALS["version"] = "0.2.7 βeta";
 $GLOBALS["app"] = new App;
 $GLOBALS["phpV"] = phpversion();
 $GLOBALS["warnPhp"] = phpversion() < 5;
