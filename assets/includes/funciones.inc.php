@@ -1,5 +1,4 @@
 <?php
-# AIzaSyA5uhrajqiN_WB2SZeRan_lleSoELoYpzw - google key
 ################## caracteres en español ##########
 function esp($string, $escapar = false)
 {
